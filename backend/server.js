@@ -1,3 +1,5 @@
+const { run_query } = require('./Components/postgres_connect')
+
 const port = 4000
 
 // setting up express
@@ -23,26 +25,34 @@ app.use(sessions({
     resave: false,
 }));
 
-// setting up postgres connection
-const fs = require('fs')
-config_file_data = fs.readFileSync(__dirname+"/../config.txt",)
-const postgres_config = JSON.parse(config_file_data)
-const { Pool } = require('pg')
-const pool = new Pool(postgres_config)
-pool.on('error',
-    (err,client)=>{
-        console.error("Postgres connection failed",err)
-        process.exit()
-    }
-)
-
 // setting up bcrypt for password hashing
 const bcrypt = require('bcrypt')
 const saltRounds = 10
 
-app.get('/logout',
-    async (req,res)=>{
-        req.session.destroy()
-        res.end()
+// app.get('/logout',
+//     async (req,res)=>{
+//         req.session.destroy()
+//         res.end()
+//     }
+// )
+
+// app.get('/login',
+// )
+
+// app.listen(port,
+//     ()=>{
+//         console.log("Server running on port %d",port);
+//     }
+// )
+
+run_query("SELECT * FROM mail",[])
+.then(
+    result => {
+        console.log(result)
+    }
+)
+.catch(
+    error => {
+        console.log(error)
     }
 )
