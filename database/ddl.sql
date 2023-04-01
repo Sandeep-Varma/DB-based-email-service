@@ -4,6 +4,7 @@ drop table if exists mailing_list;
 drop table if exists recipient;
 drop table if exists mail;
 drop table if exists mail_user;
+drop table if exists mail_admin;
 
 create table mail_admin(
     id varchar(25) not null,
