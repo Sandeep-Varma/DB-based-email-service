@@ -4,13 +4,14 @@ import React, { useState } from 'react';
 const Register = (props) => {
     // declare all the required states
     const [studentid, setStudentid] = useState('');
+    const [name, setName] = useState('');
     const [password, setPassword] = useState('');
     const [confirmpassword, setConfirmpassword] = useState('');
     const [error, setError] = useState('');
     // check if all the fields are filled
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!studentid || !password || !confirmpassword) {
+        if (!studentid || !password || !confirmpassword || !name) {
             setError('Please enter all fields');
             return;
         }
@@ -24,7 +25,7 @@ const Register = (props) => {
             const response = await fetch('http://localhost:4000/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ studentid, password }),
+                body: JSON.stringify({ studentid, password, name }),
             });
             const data = await response.json();
             console.log(data);
@@ -55,16 +56,23 @@ const Register = (props) => {
                     />
                     <input
 
+                        type="text"
+                        placeholder="Name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                    />
+                    <input
+
                         type="password"
                         placeholder="Password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />
                     <input
-                    type = "password"
-                    placeholder = "Confirm Password"
-                    value = {confirmpassword}
-                    onChange = {(e) => setConfirmpassword(e.target.value)}
+                        type="password"
+                        placeholder="Confirm Password"
+                        value={confirmpassword}
+                        onChange={(e) => setConfirmpassword(e.target.value)}
                     />
                     <button class="submit-btn" type="submit">Register</button>
                 </form>
@@ -72,3 +80,5 @@ const Register = (props) => {
         </div>
     );
 };
+
+export default Register;
