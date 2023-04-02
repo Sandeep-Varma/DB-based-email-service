@@ -10,24 +10,26 @@ pool.on('error',
     }
 )
 
-async function run_query (query_string, params){
+async function run_queries (query_string, params){
     try {
         client = await pool.connect()
-        try {
-            result = await client.query(query_string,params)
-            console.log("Postgres query successful")
-            client.release()
-            output = [{"status":"0"}].concat(result.rows)
-        } catch (error) {
-            client.release()
-            console.log("Postgres query failed:",error)
-            return [{"status":"-1"}]
+        output = [{"status":"0"}]
+        for (let i=0;i<query_string.length;i++){
+            try {
+                result = await client.query(query_string[i],params[i])
+                client.release()
+                output = output.concat(result.rows)
+            } catch (error) {
+                client.release()
+                console.log("Postgres query ",i," failed:",error)
+                return [{"status":"-1"}]
+            }
         }
+        return output
     } catch (error) {
         console.log("Postgres client connect failed:",error)
         return [{"status":"-2"}]
     }
-    return output
 }
 
-module.exports = { run_query }
+module.exports = { run_queries }
