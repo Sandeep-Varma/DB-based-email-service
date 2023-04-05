@@ -13,7 +13,7 @@ pool.on('error',
 async function execute (queries, params){
     try {
         client = await pool.connect()
-        output = [{"status":"0"}]
+        output = [[{"status":"0"}]]
         for (let i=0;i<queries.length;i++){
             try {
                 result = await client.query(queries[i],params[i])

@@ -15,9 +15,8 @@ const DefaultRedirector = ()=>{
         .then(
             async (response)=>{
                 // console.log(response)
-                if (response[0].status === "-1") navigate("/login");
-                else if (response[0].role === "i") navigate("/instr/home");
-                else navigate("/home");
+                if (response[0].status === "0") navigate("/home");
+                else navigate("/login");
             }
         )
     }, [navigate]);

@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 
-function CreateUser() {
+function SignUp() {
     const navigate = useNavigate();
     const [user_id, setUserId] = useState("");
     const [password, setPassword] = useState("");
+    const [name, setName] = useState("");
     const [confirm_password, setConfirmPassword] = useState("");
+    const [idexists, setIdExists] = useState(false);
+    const [server_error, setServerError] = useState(false);
     
     function call_post(e) {
         e.preventDefault();
@@ -13,10 +16,11 @@ function CreateUser() {
         if (user_id && password && confirm_password && password === confirm_password) {
             let userData = {
                 user_id: user_id,
-                password: password
+                password: password,
+                name: name,
             }
             // console.log(JSON.stringify(userData))
-            fetch('http://localhost:4000/insert_user', {  // Enter your IP address here
+            fetch('http://localhost:4000/signup', {  // Enter your IP address here
                 method: 'POST', 
                 mode: 'cors',
                 headers: {
@@ -25,20 +29,22 @@ function CreateUser() {
                 },
                 body: JSON.stringify(userData) // body data type must match "Content-Type" header
             })
-            .then(response=>response.text())
+            .then(response=>response.json())
+            .then(response=>response[0])
             .then(
                 // display success message
                 (response)=>{
-                    if (response === "0"){
-                        alert("User created successfully");
-                        navigate("/home");
-                    }
-                    else alert("User creation failed");
+                    setServerError(false);
+                    setIdExists(false);
+                    if (response.status.startsWith("err_")) setServerError(true);
+                    else if (response.status === "id_already_exists") setIdExists(true);
+                    else navigate("/home"); 
                 }
             )
             .catch(
                 (error)=>{
                     // console.log(error);
+                    setServerError(true);
                 }
             );
         }
@@ -72,10 +78,19 @@ function CreateUser() {
                     onChange={e=>setConfirmPassword(e.target.value)}
                 />
                 <br />
+                <label>Name</label>
+                <input
+                    type="text"
+                    value={name}
+                    onChange={e=>setName(e.target.value)}
+                />
+                <br />
+                {idexists && <p style={{color: "red"}}>ID already taken</p>}
+                {server_error && <p style={{color: "red"}}>Server error</p>}
                 <button type="submit" onClick={call_post}>Create User</button>
             </form>
         </div>
     );
 }
 
-export default CreateUser;
+export default SignUp;

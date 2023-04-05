@@ -7,7 +7,7 @@ const LoginUser = ()=>{
     const [password, setPassword] = useState("");
     const [wrongpwd, setWrongPwd] = useState(false);
     const [wrongid, setWrongId] = useState(false);
-    const [norole, setNoRole] = useState(false);
+    const [server_error, setServerError] = useState(false);
     
     const authenticate = (e)=>{
         e.preventDefault();
@@ -27,24 +27,22 @@ const LoginUser = ()=>{
                 body: JSON.stringify(userData) // body data type must match "Content-Type" header
             })
             .then(response=>response.json())
+            .then(response=>response[0])
             .then(
                 (response)=>{
-                    setNoRole(false);
                     setWrongId(false);
                     setWrongPwd(false);
-                    // console.log("Login Status: "+response.login_status);
-                    if (response.login_status === "0"){
-                      if (response.role === "s") navigate("/home");
-                      else if (response.role === "i") navigate("/instr/home");
-                    }
-                    else if (response.login_status === "-2") setWrongId(true);
-                    else if (response.login_status === "-1") setWrongPwd(true);
-                    else if (response.login_status === "-7") setNoRole(true);
-                    else alert("Server error "+response.login_status)
+                    setServerError(false);
+                    // console.log("Login Status: "+response.status);
+                    if (response.status.startsWith("err_")) setServerError(true);
+                    else if (response.status === "id_not_found") setWrongId(true);
+                    else if (response.status === "wrong_pwd") setWrongPwd(true);
+                    else navigate("/home");
                 }
             )
             .catch(
                 (error)=>{
+                    setServerError(true);
                     console.log(error);
                 }
             );
@@ -103,9 +101,9 @@ const LoginUser = ()=>{
                   width: "100%"
                 }}
               />
-              {norole && <p style={{color: "red"}}>Not a student or instructor</p>}
               {wrongid && <p style={{color: "red"}}>User ID does not exist</p>}
               {wrongpwd && <p style={{color: "red"}}>Wrong password</p>}
+              {server_error && <p style={{color: "red"}}>Server error</p>}
               <button type="submit" onClick={authenticate} style={{
                 fontSize: "18px",
                 padding: "10px",
