@@ -1,4 +1,4 @@
-const { run_queries } = require('./Components/postgres_connect')
+const { execute, executemany } = require('./Components/postgres_connect')
 
 const port = 4000
 
@@ -40,7 +40,7 @@ app.post('/login',
     async (req,res)=>{
         id = req.body.user_id
         pwd = req.body.password
-        run_queries(["SELECT hashed_pwd FROM mail_user where id = $1"],[[id]])
+        execute(["SELECT hashed_pwd FROM mail_user where id = $1"],[[id]])
         .then(output => {
             if (output.length == 1) {
                 if (output[0].status == "0") res.send({"status":"id_not_found"})
@@ -50,7 +50,7 @@ app.post('/login',
                 bcrypt.compare(pwd, output[0].hashed_password,
                     async (err,match)=>{
                         if (err) {
-                            res.send({"status":"-6"})
+                            res.send({"status":"err_password_hash_error"})
                         }
                         else {
                             if (match) {
@@ -68,7 +68,7 @@ app.post('/login',
             }
         )
         .catch(err => {
-            res.send({"status":"-10"})
+            res.send({"status":"err_run_query"})
         })
     }
 )
@@ -78,22 +78,22 @@ app.post('/signup',
         id = req.body.user_id
         pwd = req.body.password
         full_name = req.body.name
-        run_queries(["SELECT * FROM mail_user where id = $1"],[[id]])
+        execute(["SELECT * FROM mail_user where id = $1"],[[id]])
         .then(result => {
             if (output.length == 1) {
                 if (output[0].status == "0"){
                     bcrypt.hash(pwd, saltRounds,
                         (err,hashed_pwd)=>{
                             if (err) {
-                                res.send({"status":"-6"})
+                                res.send({"status":"err_password_hash_error"})
                             }
                             else {
-                                run_queries(["insert into mail_user values ($1,$2,$3)"],[[id,hashed_pwd,full_name]])
+                                execute(["insert into mail_user values ($1,$2,$3)"],[[id,hashed_pwd,full_name]])
                                 .then(result => {
                                     res.send(output[0])
                                 })
                                 .catch(err => {
-                                    res.send({"status":"-20"})
+                                    res.send({"status":"err_run_query"})
                                 })
                             }
                         }
@@ -104,7 +104,7 @@ app.post('/signup',
             else res.send({"status":"id_already_exists"})
         })
         .catch(err => {
-            res.send({"status":"-10"})
+            res.send({"status":"err_run_query"})
         })
     }
 )

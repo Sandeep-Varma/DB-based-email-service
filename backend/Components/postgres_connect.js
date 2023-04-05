@@ -10,26 +10,48 @@ pool.on('error',
     }
 )
 
-async function run_queries (query_string, params){
+async function execute (queries, params){
     try {
         client = await pool.connect()
         output = [{"status":"0"}]
-        for (let i=0;i<query_string.length;i++){
+        for (let i=0;i<queries.length;i++){
             try {
-                result = await client.query(query_string[i],params[i])
+                result = await client.query(queries[i],params[i])
                 client.release()
-                output = output.concat(result.rows)
+                output = output.concat([result.rows])
             } catch (error) {
                 client.release()
                 console.log("Postgres query ",i," failed:",error)
-                return [{"status":"-1"}]
+                return [{"status":"err_postgres_query"}]
             }
         }
         return output
     } catch (error) {
         console.log("Postgres client connect failed:",error)
-        return [{"status":"-2"}]
+        return [{"status":"err_postgres_connect"}]
     }
 }
 
-module.exports = { run_queries }
+async function executemany (query, params){
+    try {
+        client = await pool.connect()
+        output = [{"status":"0"}]
+        for (let i=0;i<params.length;i++){
+            try {
+                result = await client.query(query,params[i])
+                client.release()
+                output = output.concat(result.rows)
+            } catch (error) {
+                client.release()
+                console.log("Postgres query ",i," failed:",error)
+                return [{"status":"err_postgres_query"}]
+            }
+        }
+        return output
+    } catch (error) {
+        console.log("Postgres client connect failed:",error)
+        return [{"status":"err_postgres_connect"}]
+    }
+}
+
+module.exports = { execute, executemany }

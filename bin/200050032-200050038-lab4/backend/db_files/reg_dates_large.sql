@@ -1,0 +1,23 @@
+delete from reg_dates;
+-- insert some data into reg_dates
+-- create table reg_dates( year numeric(4,0), semester varchar(6), start_time timestamp, end_time timestamp);
+insert into reg_dates values (2001, 'Spring', '2001-01-01 00:00:00', '2001-01-31 00:00:00');
+insert into reg_dates values (2001, 'Fall', '2001-09-01 00:00:00', '2001-09-30 00:00:00');
+insert into reg_dates values (2002, 'Spring', '2002-01-01 00:00:00', '2002-01-31 00:00:00');
+insert into reg_dates values (2002, 'Fall', '2002-09-01 00:00:00', '2002-09-30 00:00:00');
+insert into reg_dates values (2003, 'Spring', '2003-01-01 00:00:00', '2003-01-31 00:00:00');
+insert into reg_dates values (2003, 'Fall', '2003-09-01 00:00:00', '2003-09-30 00:00:00');
+insert into reg_dates values (2004, 'Spring', '2004-01-01 00:00:00', '2004-01-31 00:00:00');
+insert into reg_dates values (2004, 'Fall', '2004-09-01 00:00:00', '2004-09-30 00:00:00');
+insert into reg_dates values (2005, 'Spring', '2005-01-01 00:00:00', '2005-01-31 00:00:00');
+insert into reg_dates values (2005, 'Fall', '2005-09-01 00:00:00', '2005-09-30 00:00:00');
+insert into reg_dates values (2006, 'Spring', '2006-01-01 00:00:00', '2006-01-31 00:00:00');
+insert into reg_dates values (2006, 'Fall', '2006-09-01 00:00:00', '2006-09-30 00:00:00');
+insert into reg_dates values (2007, 'Spring', '2007-01-01 00:00:00', '2007-01-31 00:00:00');
+insert into reg_dates values (2007, 'Fall', '2007-09-01 00:00:00', '2007-09-30 00:00:00');
+insert into reg_dates values (2008, 'Spring', '2008-01-01 00:00:00', '2008-01-31 00:00:00');
+insert into reg_dates values (2008, 'Fall', '2008-09-01 00:00:00', '2008-09-30 00:00:00');
+insert into reg_dates values (2009, 'Spring', '2009-01-01 00:00:00', '2009-01-31 00:00:00');
+insert into reg_dates values (2009, 'Fall', '2009-09-01 00:00:00', '2009-09-30 00:00:00');
+insert into reg_dates values (2010, 'Spring', '2010-01-01 00:00:00', '2010-01-31 00:00:00');
+insert into reg_dates values (2010, 'Fall', '2010-09-01 00:00:00', '2010-09-30 00:00:00');
