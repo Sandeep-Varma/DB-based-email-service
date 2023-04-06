@@ -38,7 +38,7 @@ async function get_mailbox (id, box) {
 async function get_new_mails (id, time) {
 }
 
-async function send_mail () {
+async function get_mail (id, sender_id, mail_num) {
 }
 
-module.exports = { get_mailbox }
+module.exports = { get_mailbox, get_new_mails, get_mail, send_mail }

@@ -137,6 +137,41 @@ app.get('/mail/:box',
     }
 )
 
+app.post('/send_mail',
+    async (req,res)=>{
+    }
+)
+
+app.post('/get_mail',
+    async (req,res)=>{
+    }
+)
+
+app.post('/mark_as_read',
+    async (req,res)=>{
+    }
+)
+
+app.post('/move_to_trash',
+    async (req,res)=>{
+    }
+)
+
+app.post('/mark_star',
+    async (req,res)=>{
+    }
+)
+
+app.post('/new_mailing_list',
+    async (req,res)=>{
+    }
+)
+
+app.post('/add_to_mailing_list',
+    async (req,res)=>{
+    }
+)
+
 app.listen(port,
     ()=>{
         console.log("Server running on port %d",port);
