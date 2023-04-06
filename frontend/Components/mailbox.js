@@ -6,38 +6,39 @@ const MailPage = ()=>{
     const { box } = useParams();
     const [server_error, setServerError] = useState(false);
     const [logged_in, setLoggedIn] = useState(false);
-    const [data, setData] = useState([]);
-    const [name, setName] = useState("");
-    const [id, setId] = useState("");
     const [done, setDone] = useState(false);
-
     
     useEffect(()=>{
-    const f=async()=>{
-        console.log('http://localhost:4000/mail/'+box)
-        fetch('http://localhost:4000/mail/'+box, {
-            method: 'GET',
-            mode: 'cors',
-            credentials: 'include',
-        })
-        .then(response=>response.json())
-        .then(
-            async (response)=>{
-                console.log(response)
-                if (response[0][0].status == "not_logged_in") navigate("/login");
-                else setLoggedIn(true);
-                if (response[0][0].status.startsWith("err_")) setServerError(true);
-
-                // setDone(true)
-            }
-        )
-        .catch((error)=>{console.log(error);});
-    }
-    f();
+        const f=async()=>{
+            console.log('http://localhost:4000/mail/'+box)
+            fetch('http://localhost:4000/mail/'+box, {
+                method: 'GET',
+                mode: 'cors',
+                credentials: 'include',
+            })
+            .then(response=>response.json())
+            .then(
+                async (response)=>{
+                    console.log(response)
+                    if (response[0][0].status == "not_logged_in") navigate("/login");
+                    else setLoggedIn(true);
+                    if (response[0][0].status.startsWith("err_")) setServerError(true);
+                    else if (response[0][0].status == "invalid_box") navigate("/mail/inbox");
+                    else {
+                        
+                    }
+                    setDone(true)
+                }
+            )
+            .catch((error)=>{console.log(error);});
+        }
+        f();
     },[navigate]);
     
     if (!done) return (
-        <div><h1>Loading...</h1></div>
+        <div>
+            <h1>Loading ...</h1>
+        </div>
     )
     else if (!server_error) return (
         <div>
@@ -47,7 +48,7 @@ const MailPage = ()=>{
     else if (!logged_in){
         return (
             <div>
-                <h1>Not logged in</h1>
+                <h1>Not logged in. Redirecting ...</h1>
             </div>
         )
     }

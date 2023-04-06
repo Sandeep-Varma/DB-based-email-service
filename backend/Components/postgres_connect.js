@@ -10,6 +10,7 @@ pool.on('error',
     }
 )
 
+// execute each query in queries with corresponding params tuple in params
 async function execute (queries, params){
     try {
         client = await pool.connect()
@@ -31,6 +32,7 @@ async function execute (queries, params){
     }
 }
 
+// execute a single query with each tuple in params
 async function executemany (query, params){
     try {
         client = await pool.connect()

@@ -15,7 +15,7 @@ const DefaultRedirector = ()=>{
         .then(
             async (response)=>{
                 // console.log(response)
-                if (response[0].status === "0") navigate("/mail/inbox");
+                if (response[0][0].status === "0") navigate("/mail/inbox");
                 else navigate("/login");
             }
         )
@@ -23,7 +23,7 @@ const DefaultRedirector = ()=>{
 
     return (
         <div>
-            <h1>Redirecting..</h1>
+            <h1>Redirecting ...</h1>
         </div>
     );
 }

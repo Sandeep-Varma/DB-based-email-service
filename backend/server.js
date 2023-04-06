@@ -115,8 +115,8 @@ app.post('/signup',
 
 app.get('/check_login',
     async (req,res)=>{
-        if (req.session.user_id) res.send([{"status":"0"}])
-        else res.send([{ "status":"not_logged_in"}])
+        if (req.session.user_id) res.send([[{"status":"0"}]])
+        else res.send([[{ "status":"not_logged_in"}]])
     }
 )
 

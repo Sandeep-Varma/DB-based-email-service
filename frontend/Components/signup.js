@@ -12,22 +12,20 @@ function SignUp() {
     
     function call_post(e) {
         e.preventDefault();
-        // console.log("call_post");
         if (user_id && password && confirm_password && password === confirm_password) {
             let userData = {
                 user_id: user_id,
                 password: password,
                 name: name,
             }
-            // console.log(JSON.stringify(userData))
-            fetch('http://localhost:4000/signup', {  // Enter your IP address here
+            fetch('http://localhost:4000/signup', {
                 method: 'POST', 
                 mode: 'cors',
                 headers: {
                     'Content-Type':'application/json',
                     'Accept':'application/json'
                 },
-                body: JSON.stringify(userData) // body data type must match "Content-Type" header
+                body: JSON.stringify(userData)
             })
             .then(response=>response.json())
             .then(response=>response[0])

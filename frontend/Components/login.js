@@ -16,7 +16,7 @@ const LoginUser = ()=>{
                 user_id: user_id,
                 password: password,
             }
-            fetch('http://localhost:4000/login', {  // Enter your IP address here
+            fetch('http://localhost:4000/login', {
                 method: 'POST', 
                 mode: 'cors',
                 headers: {
@@ -24,7 +24,7 @@ const LoginUser = ()=>{
                     'Accept':'application/json'
                 },
                 credentials: 'include',
-                body: JSON.stringify(userData) // body data type must match "Content-Type" header
+                body: JSON.stringify(userData)
             })
             .then(response=>response.json())
             .then(response=>response[0])
