@@ -17,40 +17,38 @@ async function execute (queries, params){
         for (let i=0;i<queries.length;i++){
             try {
                 result = await client.query(queries[i],params[i])
-                client.release()
                 output = output.concat([result.rows])
             } catch (error) {
-                client.release()
                 console.log("Postgres query ",i," failed:",error)
-                return [{"status":"err_postgres_query"}]
+                return [[{"status":"err_postgres_query"}]]
             }
         }
+        client.release()
         return output
     } catch (error) {
         console.log("Postgres client connect failed:",error)
-        return [{"status":"err_postgres_connect"}]
+        return [[{"status":"err_postgres_connect"}]]
     }
 }
 
 async function executemany (query, params){
     try {
         client = await pool.connect()
-        output = [{"status":"0"}]
+        output = [[{"status":"0"}]]
         for (let i=0;i<params.length;i++){
             try {
                 result = await client.query(query,params[i])
-                client.release()
-                output = output.concat(result.rows)
+                output = output.concat([result.rows])
             } catch (error) {
-                client.release()
                 console.log("Postgres query ",i," failed:",error)
-                return [{"status":"err_postgres_query"}]
+                return [[{"status":"err_postgres_query"}]]
             }
         }
+        client.release()
         return output
     } catch (error) {
         console.log("Postgres client connect failed:",error)
-        return [{"status":"err_postgres_connect"}]
+        return [[{"status":"err_postgres_connect"}]]
     }
 }
 

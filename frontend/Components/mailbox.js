@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-const HomePage = ()=>{
+const MailPage = ()=>{
     const navigate = useNavigate();
+    const { box } = useParams();
     const [server_error, setServerError] = useState(false);
     const [logged_in, setLoggedIn] = useState(false);
     const [data, setData] = useState([]);
@@ -13,7 +14,8 @@ const HomePage = ()=>{
     
     useEffect(()=>{
     const f=async()=>{
-        fetch('http://localhost:4000/home', {
+        console.log('http://localhost:4000/mail/'+box)
+        fetch('http://localhost:4000/mail/'+box, {
             method: 'GET',
             mode: 'cors',
             credentials: 'include',
@@ -22,13 +24,16 @@ const HomePage = ()=>{
         .then(
             async (response)=>{
                 console.log(response)
-                
+                if (response[0][0].status == "not_logged_in") navigate("/login");
+                else setLoggedIn(true);
+                if (response[0][0].status.startsWith("err_")) setServerError(true);
+
                 // setDone(true)
             }
         )
         .catch((error)=>{console.log(error);});
     }
-    // f();
+    f();
     },[navigate]);
     
     if (!done) return (
@@ -48,7 +53,7 @@ const HomePage = ()=>{
     }
     else return (
         <div>
-            <h1>Not logged in</h1>
+            <h1>Webpage in development</h1>
         </div>
     )
     // return (
@@ -154,4 +159,4 @@ const HomePage = ()=>{
 }
 
 
-export default HomePage;
+export default MailPage;

@@ -15,7 +15,7 @@ const DefaultRedirector = ()=>{
         .then(
             async (response)=>{
                 // console.log(response)
-                if (response[0].status === "0") navigate("/home");
+                if (response[0].status === "0") navigate("/mail/inbox");
                 else navigate("/login");
             }
         )

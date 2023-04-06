@@ -1,4 +1,5 @@
 const { execute, executemany } = require('./Components/postgres_connect')
+const { get_mailbox } = require('./Components/mails')
 
 const port = 4000
 
@@ -40,15 +41,15 @@ app.post('/login',
     async (req,res)=>{
         id = req.body.user_id
         pwd = req.body.password
-        execute(["SELECT hashed_pwd FROM mail_user where id = $1"],[[id]])
+        execute(["SELECT hashed_pwd FROM mail_user where id = $1 and num_mails != '-1'"],[[id]])
         .then(output => {
             console.log(output)
             if (output[1].length == 0) {
-                if (output[0].status == "0") res.send([{"status":"id_not_found"}])
+                if (output[0][0].status == "0") res.send([{"status":"id_not_found"}])
                 else res.send(output[0])
             }
             else {
-                bcrypt.compare(pwd, output[0].hashed_password,
+                bcrypt.compare(pwd, output[1][0].hashed_pwd,
                     async (err,match)=>{
                         if (err) {
                             res.send([{"status":"err_password_hash_error"}])
@@ -66,8 +67,7 @@ app.post('/login',
                     }
                 )
             }
-            }
-        )
+        })
         .catch(err => {
             res.send([{"status":"err_run_query"}])
         })
@@ -83,7 +83,7 @@ app.post('/signup',
         .then(output => {
             console.log(output)
             if (output[1].length == 0) {
-                if (output[0].status == "0"){
+                if (output[0][0].status == "0"){
                     bcrypt.hash(pwd, saltRounds,
                         (err,hashed_pwd)=>{
                             if (err) {
@@ -120,18 +120,20 @@ app.get('/check_login',
     }
 )
 
-app.get('/home',
+app.get('/mail/:box',
     async (req,res)=>{
+        box = req.params.box
         id = req.session.user_id
         if (id){
-            queries = []
-            params = []
-            queries.push("SELECT * FROM mail_user where id = $1")
-            params.push([id])
-            queries.push("SELECT * FROM receiver where id = $1")
-            params.push([id])
+            get_mailbox(id,box)
+            .then(output => {
+                res.send(output)
+            })
+            .catch(err => {
+                res.send([[{"status":"err_fetching_mailbox"}]])
+            })
         }
-        else res.send([{ "status":"not_logged_in"}])
+        else res.send([[{ "status":"not_logged_in"}]])
     }
 )
 

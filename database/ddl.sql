@@ -26,7 +26,7 @@ create table mail_user(
 create table mail(
     sender_id varchar(25) not null,
     mail_num int not null,
-    time timestamp not null,
+    time timestamptz not null,
     subject varchar(200),
     content varchar(1000),
     is_draft boolean not null default false,

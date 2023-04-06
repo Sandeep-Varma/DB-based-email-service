@@ -33,7 +33,7 @@ const LoginUser = ()=>{
                     setWrongId(false);
                     setWrongPwd(false);
                     setServerError(false);
-                    // console.log("Login Status: "+response.status);
+                    console.log("Login Status: "+response.status);
                     if (response.status.startsWith("err_")) setServerError(true);
                     else if (response.status === "id_not_found") setWrongId(true);
                     else if (response.status === "wrong_pwd") setWrongPwd(true);
