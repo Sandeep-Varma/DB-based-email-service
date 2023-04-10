@@ -8,7 +8,8 @@ async function get_mailbox (id, box) {
     if (box == "inbox") {
         queries.push("select m.sender_id, m.mail_num, time, subject, read, starred \
                     from mail as m join recipient as r using (sender_id, mail_num) \
-                    where r.id = $1 and time < (select now from now()) \
+                    where (r.id = $1 or r.id in (select list_id from mailing_list where id = $1)) \
+                    and time < (select now from now()) \
                     and not is_draft and not r.trashed and not r.deleted \
                     order by time desc;")
         params.push([id])
@@ -38,11 +39,16 @@ async function get_mailbox (id, box) {
 async function get_new_mails (id, time) {
 }
 
-async function get_mail (id, sender_id, mail_num) {
+async function get_received_mail (id, sender_id, mail_num) {
+}
+
+async function get_sent_mail (id, sender_id, mail_num) {
+}
+
+async function get_draft(id, mail_num) {
 }
 
 async function send_mail (id, subject, content, recipients, is_draft, time) {
-    
 }
 
-module.exports = { get_mailbox, get_new_mails, get_mail, send_mail }
+module.exports = { get_mailbox, get_new_mails, get_received_mail, get_sent_mail, get_draft, send_mail }

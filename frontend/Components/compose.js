@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from "react-router-dom";
 
-const MailPage = ()=>{
+const ComposePage = ()=>{
     const navigate = useNavigate();
-    const { box } = useParams();
+    const { num } = useParams();
     const [server_error, setServerError] = useState(false);
     const [logged_in, setLoggedIn] = useState(false);
     const [done, setDone] = useState(false);
     
+    const send_mail = ()=>{
+    }
+    
     useEffect(()=>{
         const f=async()=>{
-            fetch('http://localhost:4000/mail/'+box, {
+            fetch('http://localhost:4000/compose/'+num, {
                 method: 'GET',
                 mode: 'cors',
                 credentials: 'include',
@@ -22,9 +25,10 @@ const MailPage = ()=>{
                     if (response[0][0].status == "not_logged_in") navigate("/login");
                     else setLoggedIn(true);
                     if (response[0][0].status.startsWith("err_")) setServerError(true);
-                    else if (response[0][0].status == "invalid_box") navigate("/mail/inbox");
                     else {
-                        
+                        if (response[0][0].status !== "0"){
+
+                        }
                     }
                     setDone(true)
                 }
@@ -159,4 +163,4 @@ const MailPage = ()=>{
 }
 
 
-export default MailPage;
+export default ComposePage;

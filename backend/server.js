@@ -1,5 +1,5 @@
 const { execute, executemany } = require('./Components/postgres_connect')
-const { get_mailbox, send_mail } = require('./Components/mails')
+const { get_mailbox, get_new_mails, get_received_mail, get_sent_mail, get_draft, send_mail } = require('./Components/mails')
 
 const port = 4000
 
@@ -137,6 +137,61 @@ app.get('/mail/:box',
     }
 )
 
+app.post('/get_received_mail',
+    async (req,res)=>{
+        id = req.session.user_id
+        sender_id = req.body.sender_id
+        mail_num = req.body.mail_num
+        if (id){
+            get_received_mail(id,sender_id,mail_num)
+            .then(output => {
+                res.send(output)
+            })
+            .catch(err => {
+                res.send([[{"status":"err_fetching_mail"}]])
+            })
+        }
+        else res.send([[{ "status":"not_logged_in"}]])
+    }
+)
+
+app.post('/get_sent_mail',
+    async (req,res)=>{
+        id = req.session.user_id
+        mail_num = req.body.mail_num
+        if (id){
+            get_sent_mail(id,mail_num)
+            .then(output => {
+                res.send(output)
+            })
+            .catch(err => {
+                res.send([[{"status":"err_fetching_mail"}]])
+            })
+        }
+        else res.send([[{ "status":"not_logged_in"}]])
+    }
+)
+
+app.get('/compose/:num',
+    async (req,res)=>{
+        id = req.session.user_id
+        num = req.body.num
+        if (id){
+            if (num == 0) res.send([[{"status":"0"}]])
+            else{
+                get_draft(id,num)
+                .then(output => {
+                    res.send(output)
+                })
+                .catch(err => {
+                    res.send([[{"status":"err_fetching_draft"}]])
+                })
+            }
+        }
+        else res.send([[{ "status":"not_logged_in"}]])
+    }
+)
+
 app.post('/send_mail',
     async (req,res)=>{
         id = req.session.user_id
@@ -156,11 +211,6 @@ app.post('/send_mail',
             })
         }
         else res.send([[{ "status":"not_logged_in"}]])
-    }
-)
-
-app.post('/get_mail',
-    async (req,res)=>{
     }
 )
 
