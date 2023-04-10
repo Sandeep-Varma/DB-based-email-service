@@ -8,6 +8,11 @@ const ComposePage = ()=>{
     const [logged_in, setLoggedIn] = useState(false);
     const [done, setDone] = useState(false);
     
+    const [to, setTo] = useState([]);
+    const [cc, setCc] = useState([]);
+    const [subject, setSubject] = useState("");
+    const [content, setContent] = useState("");
+    
     const send_mail = ()=>{
     }
     
