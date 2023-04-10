@@ -26,8 +26,8 @@ const ComposePage = ()=>{
                     else setLoggedIn(true);
                     if (response[0][0].status.startsWith("err_")) setServerError(true);
                     else {
-                        if (response[0][0].status !== "0"){
-
+                        if (num !== "0"){
+                            
                         }
                     }
                     setDone(true)
