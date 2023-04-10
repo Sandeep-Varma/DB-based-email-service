@@ -28,7 +28,8 @@ create table mail(
     mail_num int not null,
     time timestamptz not null,
     subject varchar(200),
-    content varchar(1000),
+    content varchar(1000), -- or text?
+    --------------------------------------------------- another attribute for number of attachments?
     is_draft boolean not null default false,
     trashed boolean not null default false,
     -- in trash of sender
