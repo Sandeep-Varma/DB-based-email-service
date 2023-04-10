@@ -1,5 +1,5 @@
 const { execute, executemany } = require('./Components/postgres_connect')
-const { get_mailbox } = require('./Components/mails')
+const { get_mailbox, send_mail } = require('./Components/mails')
 
 const port = 4000
 
@@ -139,6 +139,23 @@ app.get('/mail/:box',
 
 app.post('/send_mail',
     async (req,res)=>{
+        id = req.session.user_id
+        subject = req.body.subject
+        content = req.body.content
+        to_recipients = req.body.to_recipients
+        cc_recipients = req.body.cc_recipients
+        is_draft = req.body.is_draft
+        time = req.body.time
+        if (id){
+            send_mail(id,subject,content,recipients,is_draft,time)
+            .then(output => {
+                res.send(output)
+            })
+            .catch(err => {
+                res.send([[{"status":"err_sending_mail"}]])
+            })
+        }
+        else res.send([[{ "status":"not_logged_in"}]])
     }
 )
 
