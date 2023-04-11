@@ -39,7 +39,7 @@ const MailPage = ()=>{
             <h1>Loading ...</h1>
         </div>
     )
-    else if (!server_error) return (
+    else if (server_error) return (
         <div>
             <h1>Server Error</h1>
         </div>

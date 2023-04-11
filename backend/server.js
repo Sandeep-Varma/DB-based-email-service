@@ -175,9 +175,9 @@ app.post('/get_sent_mail',
 app.get('/compose/:num',
     async (req,res)=>{
         id = req.session.user_id
-        num = req.body.num
+        num = req.params.num
         if (id){
-            if (num == 0) res.send([[{"status":"0"}]])
+            if (num == "0") res.send([[{"status":"0"}]])
             else{
                 get_draft(id,num)
                 .then(output => {
