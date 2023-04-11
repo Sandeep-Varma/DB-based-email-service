@@ -19,10 +19,10 @@ const MailPage = ()=>{
             .then(
                 async (response)=>{
                     console.log(response)
-                    if (response[0][0].status == "not_logged_in") navigate("/login");
+                    if (response[0][0].status === "not_logged_in") navigate("/login");
                     else setLoggedIn(true);
                     if (response[0][0].status.startsWith("err_")) setServerError(true);
-                    else if (response[0][0].status == "invalid_box") navigate("/mail/inbox");
+                    else if (response[0][0].status === "invalid_box") navigate("/mail/inbox");
                     else {
                         
                     }
@@ -32,7 +32,7 @@ const MailPage = ()=>{
             .catch((error)=>{console.log(error);});
         }
         f();
-    },[navigate]);
+    },[navigate, box]);
     
     if (!done) return (
         <div>

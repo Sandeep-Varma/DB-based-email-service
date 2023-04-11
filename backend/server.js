@@ -195,14 +195,14 @@ app.get('/compose/:num',
 app.post('/send_mail',
     async (req,res)=>{
         id = req.session.user_id
-        subject = req.body.subject
-        content = req.body.content
         to_recipients = req.body.to_recipients
         cc_recipients = req.body.cc_recipients
+        subject = req.body.subject
+        content = req.body.content
         is_draft = req.body.is_draft
         time = req.body.time
         if (id){
-            send_mail(id,subject,content,recipients,is_draft,time)
+            send_mail(id,subject,content,to_recipients,cc_recipients,is_draft,time)
             .then(output => {
                 res.send(output)
             })

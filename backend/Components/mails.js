@@ -1,8 +1,7 @@
 const { execute, executemany } = require('./postgres_connect')
 
 async function get_mailbox (id, box) {
-    console.log("fetch mailbox request received", box)
-    queries = ["SELECT id, name FROM mail_user where id = $1"]
+    queries = ["SELECT id, name FROM mail_user where id = $1;"]
     params = [[id]]
 
     if (box == "inbox") {
@@ -48,7 +47,25 @@ async function get_sent_mail (id, sender_id, mail_num) {
 async function get_draft(id, mail_num) {
 }
 
-async function send_mail (id, subject, content, recipients, is_draft, time) {
+async function send_mail (id, subject, content, to_recipients, cc_recipients, is_draft, time) {
+    queries = ["INSERT into mail values ($1, 1+(select num_mails from mail_user where id=$2), (select now from now()), $3, $4, $5, $6, $7);"]
+    params = [[id, id, subject, content, is_draft, false, false]]
+    queries.push("UPDATE mail_user set num_mails = 1+(select num_mails from mail_user where id=$1) where id=$1;")
+    params.push([id])
+    for (recipient of to_recipients) {
+        queries.push("INSERT into recipient values ($1, (select num_mails from mail_user where id=$2), $3, $4, $5, $6, $7, $8);")
+        params.push([id, id, recipient, false, false, false, false, false])
+    }
+    for (recipient of cc_recipients) {
+        queries.push("INSERT into recipient values ($1, (select num_mails from mail_user where id=$2), $3, $4, $5, $6, $7, $8);")
+        params.push([id, id, recipient, true, false, false, false, false])
+    }
+    try {
+        output = await execute(queries,params)
+        return output
+    } catch (error) {
+        return [[{"status":"err_run_query"}]]
+    }
 }
 
 module.exports = { get_mailbox, get_new_mails, get_received_mail, get_sent_mail, get_draft, send_mail }

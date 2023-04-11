@@ -13,7 +13,38 @@ const ComposePage = ()=>{
     const [subject, setSubject] = useState("");
     const [content, setContent] = useState("");
     
-    const send_mail = ()=>{
+    const send_mail = (is_draft)=>{
+        fetch('http://localhost:4000/send_mail', {
+            method: 'POST',
+            mode: 'cors',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                to_recipients: to,
+                cc_recipients: cc,
+                subject: subject,
+                content: content,
+                is_draft: is_draft,
+                time: new Date().getTime()
+            })
+        })
+        .then(response=>response.json())
+        .then(
+            async (response)=>{
+                console.log(response)
+                // if (response[0][0].status === "not_logged_in") navigate("/login");
+                // else setLoggedIn(true);
+                // if (response[0][0].status.startsWith("err_")) setServerError(true);
+                // else {
+                //     // if (is_draft) navigate("/mail/drafts");
+                //     // else navigate("/mail/sent");
+                //     navigate("/mail/inbox");
+                // }
+                // setDone(true);
+            }
+        )
     }
     
     useEffect(()=>{
@@ -26,8 +57,7 @@ const ComposePage = ()=>{
             .then(response=>response.json())
             .then(
                 async (response)=>{
-                    console.log(response)
-                    if (response[0][0].status == "not_logged_in") navigate("/login");
+                    if (response[0][0].status === "not_logged_in") navigate("/login");
                     else setLoggedIn(true);
                     if (response[0][0].status.startsWith("err_")) setServerError(true);
                     else {
@@ -41,7 +71,7 @@ const ComposePage = ()=>{
             .catch((error)=>{console.log(error);});
         }
         f();
-    },[navigate]);
+    },[navigate, num]);
     
     if (!done) return (
         <div>
@@ -141,7 +171,7 @@ const ComposePage = ()=>{
                   width: "100%"
                 }}>
               </textarea>
-              <button type="submit" onClick={send_mail} style={{
+              <button type="submit" onClick={()=>send_mail(false)} style={{
                 fontSize: "18px",
                 padding: "10px",
                 marginTop: "20px",
