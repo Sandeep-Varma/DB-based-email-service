@@ -19,7 +19,8 @@ const ComposePage = ()=>{
             mode: 'cors',
             credentials: 'include',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Accept':'application/json'
             },
             body: JSON.stringify({
                 to_recipients: to,
