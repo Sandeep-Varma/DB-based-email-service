@@ -192,6 +192,18 @@ app.get('/compose/:num',
     }
 )
 
+app.get('/check_id/:id',
+    async (req,res)=>{
+        id = req.params.id
+        execute(["SELECT * FROM mail_user where id = $1"],[[id]])
+        .then(output => {
+            console.log(output)
+            if (output[1].length == 0) res.send([[{"status":"-1"}]])
+            else res.send([[{"status":"0"}]])
+        })
+    }
+)
+
 app.post('/send_mail',
     async (req,res)=>{
         id = req.session.user_id

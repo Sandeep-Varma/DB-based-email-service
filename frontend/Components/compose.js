@@ -46,6 +46,21 @@ const ComposePage = ()=>{
             }
         )
     }
+
+    const check_id = (id)=>{
+        fetch('http://localhost:4000/check_id/'+id, {
+            method: 'GET',
+            mode: 'cors',
+            credentials: 'include',
+        })
+        .then(response=>response.json())
+        .then(
+            async (response)=>{
+                if (response[0][0].status === "0") return true;
+                else return false;
+            }
+        )
+    }
     
     useEffect(()=>{
         const f=async()=>{
