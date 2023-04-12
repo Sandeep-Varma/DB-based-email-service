@@ -48,6 +48,7 @@ async function get_draft(id, mail_num) {
 }
 
 async function send_mail (id, subject, content, to_recipients, cc_recipients, is_draft, time) {
+    console.log("send_mail function called")
     queries = ["INSERT into mail values ($1, 1+(select num_mails from mail_user where id=$2), (select now from now()), $3, $4, $5, $6, $7);"]
     params = [[id, id, subject, content, is_draft, false, false]]
     queries.push("UPDATE mail_user set num_mails = 1+(select num_mails from mail_user where id=$1) where id=$1;")
@@ -62,6 +63,7 @@ async function send_mail (id, subject, content, to_recipients, cc_recipients, is
     }
     try {
         output = await execute(queries,params)
+        console.log(output)
         return output
     } catch (error) {
         return [[{"status":"err_run_query"}]]

@@ -206,6 +206,7 @@ app.get('/check_id/:id',
 
 app.post('/send_mail',
     async (req,res)=>{
+        console.log("send_mail API called")
         id = req.session.user_id
         to_recipients = req.body.to_recipients
         cc_recipients = req.body.cc_recipients

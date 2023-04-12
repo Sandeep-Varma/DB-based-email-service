@@ -13,7 +13,7 @@ const ComposePage = ()=>{
     const [subject, setSubject] = useState("");
     const [content, setContent] = useState("");
     
-    const send_mail = (is_draft)=>{
+    const send_mail = (draft)=>{
         fetch('http://localhost:4000/send_mail', {
             method: 'POST',
             mode: 'cors',
@@ -27,7 +27,7 @@ const ComposePage = ()=>{
                 cc_recipients: cc,
                 subject: subject,
                 content: content,
-                is_draft: is_draft,
+                is_draft: draft,
                 time: new Date().getTime()
             })
         })
@@ -43,7 +43,6 @@ const ComposePage = ()=>{
                 //     // else navigate("/mail/sent");
                 //     navigate("/mail/inbox");
                 // }
-                // setDone(true);
             }
         )
     }
