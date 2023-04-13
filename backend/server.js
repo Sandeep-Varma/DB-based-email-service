@@ -213,9 +213,9 @@ app.post('/send_mail',
         subject = req.body.subject
         content = req.body.content
         is_draft = req.body.is_draft
-        time = req.body.time
+        send_time = req.body.send_time
         if (id){
-            send_mail(id,subject,content,to_recipients,cc_recipients,is_draft,time)
+            send_mail(id,subject,content,to_recipients,cc_recipients,is_draft,send_time)
             .then(output => {
                 res.send(output)
             })

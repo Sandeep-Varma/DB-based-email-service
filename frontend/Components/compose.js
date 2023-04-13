@@ -12,8 +12,20 @@ const ComposePage = ()=>{
     const [cc, setCc] = useState([]);
     const [subject, setSubject] = useState("");
     const [content, setContent] = useState("");
+    const [date, setDate] = useState("");
+    const [time, setTime] = useState("");
+    const [dt, setDt] = useState(new Date().getTime());
+    const [is_scheduled, setIsScheduled] = useState(false);
     
     const send_mail = (draft)=>{
+        if(is_scheduled){
+            if (date === "" || time === ""){
+                setDt(new Date().getTime());
+            }
+            else{
+                setDt(new Date(date+" "+time).getTime());
+            }
+        }
         fetch('http://localhost:4000/send_mail', {
             method: 'POST',
             mode: 'cors',
@@ -28,21 +40,21 @@ const ComposePage = ()=>{
                 subject: subject,
                 content: content,
                 is_draft: draft,
-                time: new Date().getTime()
+                time: dt
             })
         })
         .then(response=>response.json())
         .then(
             async (response)=>{
                 console.log(response)
-                // if (response[0][0].status === "not_logged_in") navigate("/login");
-                // else setLoggedIn(true);
-                // if (response[0][0].status.startsWith("err_")) setServerError(true);
-                // else {
-                //     // if (is_draft) navigate("/mail/drafts");
-                //     // else navigate("/mail/sent");
-                //     navigate("/mail/inbox");
-                // }
+                if (response[0][0].status === "not_logged_in") navigate("/login");
+                else setLoggedIn(true);
+                if (response[0][0].status.startsWith("err_")) setServerError(true);
+                else {
+                    // if (is_draft) navigate("/mail/drafts");
+                    // else navigate("/mail/sent");
+                    navigate("/mail/inbox");
+                }
             }
         )
     }
@@ -158,45 +170,122 @@ const ComposePage = ()=>{
                     width: "100%"
                     }}
                 />
-              <label style={{fontSize: "18px", marginBottom: "10px", color: "#333"}}>Subject</label>
-              <input
-                type="text"
-                value={subject}
-                onChange={e => setSubject(e.target.value)}
-                style={{
-                  fontSize: "18px",
-                  padding: "10px",
-                  marginBottom: "20px",
-                  borderRadius: "5px",
-                  border: "none",
-                  boxShadow: "0 0 5px #888888",
-                  width: "100%"
-                }}
-              />
-              <label style={{fontSize: "18px", marginBottom: "10px", color: "#333"}}>Content</label>
-              <textarea rows = "10" value={content}
-                onChange={e => setContent(e.target.value)}
-                style={{
-                  fontSize: "18px",
-                  padding: "10px",
-                  marginBottom: "20px",
-                  borderRadius: "5px",
-                  border: "none",
-                  boxShadow: "0 0 5px #888888",
-                  width: "100%"
-                }}>
-              </textarea>
-              <button type="submit" onClick={()=>send_mail(false)} style={{
-                fontSize: "18px",
-                padding: "10px",
-                marginTop: "20px",
-                width: "100px",
-                backgroundColor: "#333",
-                color: "#ffffff",
-                borderRadius: "5px",
-                border: "none",
-                boxShadow: "0 0 5px #888888"
-              }}>Send</button>
+                <label style={{fontSize: "18px", marginBottom: "10px", color: "#333"}}>Subject</label>
+                <input
+                    type="text"
+                    value={subject}
+                    onChange={e => setSubject(e.target.value)}
+                    style={{
+                    fontSize: "18px",
+                    padding: "10px",
+                    marginBottom: "20px",
+                    borderRadius: "5px",
+                    border: "none",
+                    boxShadow: "0 0 5px #888888",
+                    width: "100%"
+                    }}
+                />
+                <label style={{fontSize: "18px", marginBottom: "10px", color: "#333"}}>Content</label>
+                <textarea rows = "10" value={content}
+                    onChange={e => setContent(e.target.value)}
+                    style={{
+                    fontSize: "18px",
+                    padding: "10px",
+                    marginBottom: "20px",
+                    borderRadius: "5px",
+                    border: "none",
+                    boxShadow: "0 0 5px #888888",
+                    width: "100%"
+                    }}>
+                </textarea>
+                {/* add a button "schedule mail" which shows time and date picker */}
+                    <label style={{fontSize: "18px", marginBottom: "10px", color: "#333"}}></label>
+                    <button
+                        type="button"
+                        onClick={e => {
+                            if (is_scheduled){
+                                setIsScheduled(false);
+                            }
+                            else{
+                                setIsScheduled(true);
+                            }
+                        }}
+                        style={{
+                        fontSize: "18px",
+                        padding: "10px",
+                        marginBottom: "20px",
+                        borderRadius: "5px",
+                        border: "none",
+                        boxShadow: "0 0 5px #888888",
+                        width: "30%"
+                        }}
+                    >
+                        Schedule Mail
+                    </button>
+                {/* add a time and date picker that is shown only on clicking a button*/}
+                {is_scheduled &&
+                <div style={{display: "flex", flexDirection: "row", alignItems: "left", justifyContent: "space-between", width: "25%"}}>
+                <label style={{fontSize: "18px", marginBottom: "10px", color: "#333"}}></label>
+                <input
+                    type="time"
+                    value={time}
+                    onChange={e => setTime(e.target.value)}
+                    style={{
+                    fontSize: "18px",
+                    padding: "10px",
+                    marginBottom: "20px",
+                    borderRadius: "5px",
+                    border: "none",
+                    boxShadow: "0 0 5px #888888",
+                    width: "30%"
+                    }}
+                />
+                <label style={{fontSize: "18px", marginBottom: "10px", color: "#333"}}></label>
+                <input
+                    type="date"
+                    value={date}
+                    onChange={e => setDate(e.target.value)}
+                    style={{
+                    fontSize: "18px",
+                    padding: "10px",
+                    marginBottom: "20px",
+                    borderRadius: "5px",
+                    border: "none",
+                    boxShadow: "0 0 5px #888888",
+                    width: "50%"
+                    }}
+                />
+                </div>
+                }
+                {/* Put two buttons side by side */}
+                    <div style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        width: "25%"
+                    }}>
+                <button type="button" onClick={()=>send_mail(false)} style={{
+                    fontSize: "18px",
+                    padding: "10px",
+                    marginTop: "20px",
+                    // width: "100px",
+                    backgroundColor: "#333",
+                    color: "#ffffff",
+                    borderRadius: "5px",
+                    border: "none",
+                    boxShadow: "0 0 5px #888888"
+                }}>Send</button>
+                <button type="button" onClick={()=>send_mail(true)} style={{
+                    fontSize: "18px",
+                    padding: "10px",
+                    marginTop: "20px",
+                    // width: "100px",
+                    backgroundColor: "#333",
+                    color: "#ffffff",
+                    borderRadius: "5px",
+                    border: "none",
+                    boxShadow: "0 0 5px #888888"
+                }}>Save as Draft</button></div>
             </form>
           </div>
     )

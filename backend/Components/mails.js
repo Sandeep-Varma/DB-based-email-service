@@ -47,7 +47,7 @@ async function get_sent_mail (id, sender_id, mail_num) {
 async function get_draft(id, mail_num) {
 }
 
-async function send_mail (id, subject, content, to_recipients, cc_recipients, is_draft, time) {
+async function send_mail (id, subject, content, to_recipients, cc_recipients, is_draft, send_time) {
     console.log("send_mail function called")
     queries = ["INSERT into mail values ($1, 1+(select num_mails from mail_user where id=$2), (select now from now()), $3, $4, $5, $6, $7);"]
     params = [[id, id, subject, content, is_draft, false, false]]
