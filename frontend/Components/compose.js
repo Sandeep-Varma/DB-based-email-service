@@ -119,11 +119,11 @@ const ComposePage = ()=>{
                                 setContent(response[1][0].content)
                                 let temp = ""
                                 for (let i=0; i<response[2].length-1; i++) temp = temp.concat(response[2][i].id,", ")
-                                temp = temp.concat(response[2][response[2].length-1].id)
+                                if (response[2].length > 0) temp = temp.concat(response[2][response[2].length-1].id)
                                 setToString(temp)
                                 temp = ""
                                 for (let i=0; i<response[3].length-1; i++) temp = temp.concat(response[3][i].id,", ")
-                                temp = temp.concat(response[3][response[3].length-1].id)
+                                if (response[3].length > 0) temp = temp.concat(response[3][response[3].length-1].id)
                                 setCcString(temp)
                             }
                         }

@@ -19,8 +19,9 @@ async function execute (queries, params){
             try {
                 result = await client.query(queries[i],params[i])
                 output = output.concat([result.rows])
+                console.log("Postgres query",i+1,"out of",queries.length,"success:",queries[i])
             } catch (error) {
-                console.log("Postgres query ",i," failed:",error)
+                console.log("Postgres query ",i+1," failed:",error)
                 return [[{"status":"err_postgres_query"}]]
             }
         }
