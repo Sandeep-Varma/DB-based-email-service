@@ -2,10 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from "react-router-dom";
 // import React, { useEffect, useState } from 'react';
 import "./mailbox.css"
-function handleMailClick(id) {
-    // Call API to fetch selected email data
-    // Update selectedMail state with fetched data
-  }
+
 
 const MailPage = () => {
     const navigate = useNavigate();
@@ -24,23 +21,23 @@ const MailPage = () => {
             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
-                'Accept':'application/json'
+                'Accept': 'application/json'
             },
             body: JSON.stringify({
                 sender_id: sender_id,
                 mail_num: mail_num
             })
         })
-        .then(response => response.json())
-        .then(
-            async (response) => {
-                console.log(response)
-                
+            .then(response => response.json())
+            .then(
+                async (response) => {
+                    console.log(response)
+                    setSelectedMail(response[1][0]);
 
-            }
-        )
+                }
+            )
     }
-    
+
     useEffect(() => {
         const f = async () => {
             fetch('http://localhost:4000/mail/' + box, {
@@ -94,9 +91,10 @@ const MailPage = () => {
                         <h3 className="mail-list-header">Mailbox</h3>
                         <ul className="mail-list">
                             {data.map((mail) => (
-                                <li key={mail.id} onClick={() => FetchMail(mail.sender_id,mail.mail_num)}>
+                                <li key={mail.id} onClick={() => FetchMail(mail.sender_id, mail.mail_num)}>
                                     <div className="mail-item">
                                         <div className="mail-sender">{mail.sender_id}</div>
+
                                         <div className="mail-subject">{mail.subject}</div>
                                         <div className="mail-date">{mail.time}</div>
                                     </div>
@@ -110,8 +108,8 @@ const MailPage = () => {
                     {selectedMail && (
                         <div className="mail-display">
                             <h2>{selectedMail.subject}</h2>
-                            <p>From: {selectedMail.sender}</p>
                             <p>Sent at: {selectedMail.time}</p>
+                            <p>Content:{selectedMail.content}</p>
                             <p>{selectedMail.body}</p>
                         </div>
                     )}
