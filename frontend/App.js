@@ -7,7 +7,6 @@ import LoginUser from './Components/login';
 import MailPage from './Components/mailbox';
 import ComposePage from './Components/compose';
 import DefaultRedirector from './Components/default';
-// import NavBar from './Components/nav';
 
 const App = ()=>{
   return (
