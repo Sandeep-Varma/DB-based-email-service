@@ -43,7 +43,6 @@ app.post('/login',
         pwd = req.body.password
         execute(["SELECT hashed_pwd FROM mail_user where id = $1 and num_mails != '-1'"],[[id]])
         .then(output => {
-            console.log(output)
             if (output[1].length == 0) {
                 if (output[0][0].status == "0") res.send([{"status":"id_not_found"}])
                 else res.send(output[0])
@@ -81,7 +80,6 @@ app.post('/signup',
         full_name = req.body.name
         execute(["SELECT * FROM mail_user where id = $1"],[[id]])
         .then(output => {
-            console.log(output)
             if (output[1].length == 0) {
                 if (output[0][0].status == "0"){
                     bcrypt.hash(pwd, saltRounds,
