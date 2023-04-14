@@ -12,47 +12,33 @@ pool.on('error',
 
 // execute each query in queries with corresponding params tuple in params
 async function execute (queries, params){
-    try {
-        client = await pool.connect()
-        output = [[{"status":"0"}]]
-        for (let i=0;i<queries.length;i++){
-            try {
-                result = await client.query(queries[i],params[i])
-                output = output.concat([result.rows])
-                console.log("Postgres query",i+1,"out of",queries.length,"success:",queries[i])
-            } catch (error) {
-                console.log("Postgres query ",i+1," failed:",error)
-                return [[{"status":"err_postgres_query"}]]
-            }
+    output = [[{"status":"0"}]]
+    for (let i=0;i<queries.length;i++){
+        try {
+            result = await pool.query(queries[i],params[i])
+            output = output.concat([result.rows])
+            console.log("Postgres query",i+1,"out of",queries.length,"success:",queries[i])
+        } catch (error) {
+            console.log("Postgres query ",i+1," failed:",error)
+            return [[{"status":"err_postgres_query"}]]
         }
-        client.release()
-        return output
-    } catch (error) {
-        console.log("Postgres client connect failed:",error)
-        return [[{"status":"err_postgres_connect"}]]
     }
+    return output
 }
 
 // execute a single query with each tuple in params
 async function executemany (query, params){
-    try {
-        client = await pool.connect()
-        output = [[{"status":"0"}]]
-        for (let i=0;i<params.length;i++){
-            try {
-                result = await client.query(query,params[i])
-                output = output.concat([result.rows])
-            } catch (error) {
-                console.log("Postgres query ",i," failed:",error)
-                return [[{"status":"err_postgres_query"}]]
-            }
+    output = [[{"status":"0"}]]
+    for (let i=0;i<params.length;i++){
+        try {
+            result = await pool.query(query,params[i])
+            output = output.concat([result.rows])
+        } catch (error) {
+            console.log("Postgres query ",i," failed:",error)
+            return [[{"status":"err_postgres_query"}]]
         }
-        client.release()
-        return output
-    } catch (error) {
-        console.log("Postgres client connect failed:",error)
-        return [[{"status":"err_postgres_connect"}]]
     }
+    return output
 }
 
 module.exports = { execute, executemany }

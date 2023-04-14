@@ -45,7 +45,7 @@ async function get_sent_mail (id, sender_id, mail_num) {
 }
 
 async function get_draft(id, mail_num) {
-    queries = ["SELECT * from mail where sender_id = $1 and mail_num = $2;"]
+    queries = ["SELECT * from mail where sender_id = $1 and mail_num = $2 and is_draft is true;"]
     params = [[id, mail_num]]
     queries.push("SELECT id from recipient where sender_id = $1 and mail_num = $2 and is_cc is false;")
     params.push([id, mail_num])
