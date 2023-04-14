@@ -135,36 +135,34 @@ app.get('/mail/:box',
     }
 )
 
-app.post('/get_received_mail',
+app.post('/get_mail/:box',
     async (req,res)=>{
         id = req.session.user_id
-        sender_id = req.body.sender_id
-        mail_num = req.body.mail_num
+        box = req.params.box
         if (id){
-            get_received_mail(id,sender_id,mail_num)
-            .then(output => {
-                res.send(output)
-            })
-            .catch(err => {
-                res.send([[{"status":"err_fetching_mail"}]])
-            })
-        }
-        else res.send([[{ "status":"not_logged_in"}]])
-    }
-)
-
-app.post('/get_sent_mail',
-    async (req,res)=>{
-        id = req.session.user_id
-        mail_num = req.body.mail_num
-        if (id){
-            get_sent_mail(id,mail_num)
-            .then(output => {
-                res.send(output)
-            })
-            .catch(err => {
-                res.send([[{"status":"err_fetching_mail"}]])
-            })
+            if (box == "inbox" || box == "starred"){
+                sender_id = req.body.sender_id
+                mail_num = req.body.mail_num
+                get_received_mail(id,sender_id,mail_num)
+                .then(output => {
+                    res.send(output)
+                })
+                .catch(err => {
+                    res.send([[{"status":"err_fetching_mail"}]])
+                })
+            }
+            else if (box == "sent" || box == "drafts" || box == "scheduled"){
+                mail_num = req.body.mail_num
+                get_sent_mail(id,mail_num)
+                .then(output => {
+                    res.send(output)
+                })
+                .catch(err => {
+                    res.send([[{"status":"err_fetching_mail"}]])
+                })
+            }
+            // else if (box == "trash"){}
+            else res.send([[{"status":"err_invalid_box"}]])
         }
         else res.send([[{ "status":"not_logged_in"}]])
     }

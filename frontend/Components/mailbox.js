@@ -17,6 +17,30 @@ const MailPage = () => {
     const [selectedMail, setSelectedMail] = useState(null);
 
 
+    const FetchMail = (sender_id, mail_num) => {
+        fetch('http://localhost:4000/get_mail/' + box, {
+            method: 'POST',
+            mode: 'cors',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept':'application/json'
+            },
+            body: JSON.stringify({
+                sender_id: sender_id,
+                mail_num: mail_num
+            })
+        })
+        .then(response => response.json())
+        .then(
+            async (response) => {
+                console.log(response)
+                
+
+            }
+        )
+    }
+    
     useEffect(() => {
         const f = async () => {
             fetch('http://localhost:4000/mail/' + box, {
@@ -70,9 +94,9 @@ const MailPage = () => {
                         <h3 className="mail-list-header">Mailbox</h3>
                         <ul className="mail-list">
                             {data.map((mail) => (
-                                <li key={mail.id} onClick={() => handleMailClick(mail.id)}>
+                                <li key={mail.id} onClick={() => FetchMail(mail.sender_id,mail.mail_num)}>
                                     <div className="mail-item">
-                                        <div className="mail-sender">{mail.sender}</div>
+                                        <div className="mail-sender">{mail.sender_id}</div>
                                         <div className="mail-subject">{mail.subject}</div>
                                         <div className="mail-date">{mail.time}</div>
                                     </div>
@@ -93,9 +117,6 @@ const MailPage = () => {
                     )}
                 </div>
             </div>
-
-
-
         </div>
     )
 }

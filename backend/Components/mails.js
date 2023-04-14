@@ -39,6 +39,16 @@ async function get_new_mails (id, time) {
 }
 
 async function get_received_mail (id, sender_id, mail_num) {
+    queries = ["select m.time, m.subject, m.content, r.is_cc, r.read, r.starred, r.trashed, r.deleted \
+                from mail as m join recipient as r using (sender_id, mail_num) \
+                where sender_id = $1 and mail_num = $2"]
+    params = [[sender_id, mail_num]]
+    try {
+        output = await execute(queries,params)
+        return output
+    } catch (error) {
+        return [[{"status":"err_run_query"}]]
+    }
 }
 
 async function get_sent_mail (id, sender_id, mail_num) {
