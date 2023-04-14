@@ -18,6 +18,7 @@
     "express-session": "^1.17.3",
     "fs": "^0.0.1-security",
     "nodemon": "^2.0.22",
+    "package.json": "^2.0.1",
     "pg": "^8.10.0"
   }
 }
