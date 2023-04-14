@@ -1,6 +1,6 @@
 {
     "user":"postgres",
-    "password":"Vardhan@123",
+    "password":"Sandeep@123",
     "host":"localhost",
     "port":5432,
     "database":"db_based_email"

@@ -1,5 +1,5 @@
 const { execute, executemany } = require('./Components/postgres_connect')
-const { get_mailbox, get_new_mails, get_received_mail, get_sent_mail, get_draft, send_mail } = require('./Components/mails')
+const { get_mailbox, get_new_mails, get_received_mail, get_sent_mail, get_draft, delete_draft, send_mail } = require('./Components/mails')
 
 const port = 4000
 
@@ -192,31 +192,55 @@ app.get('/compose/:num',
     }
 )
 
-app.get('/check_id/:id',
+app.post('/check_ids/',
     async (req,res)=>{
-        id = req.params.id
-        execute(["SELECT * FROM mail_user where id = $1"],[[id]])
+        ids_list = req.body.ids_list
+        params = []
+        for (i in ids_list){
+            params.push([ids_list[i]])
+        }
+        executemany("SELECT * FROM mail_user where id = $1",params)
         .then(output => {
-            console.log(output)
-            if (output[1].length == 0) res.send([[{"status":"-1"}]])
-            else res.send([[{"status":"0"}]])
+            if (output[0][0].status == "0"){
+                for (i=1;i<output.length;i++){
+                    if (output[i].length == 0) {
+                        res.send([[{"status":params[i-1][0]}]])
+                        return
+                    }
+                }
+                res.send([[{"status":"0"}]])
+            }
+            else res.send(output)
         })
     }
 )
 
-app.post('/send_mail',
+app.post('/send_mail/:num',
     async (req,res)=>{
-        console.log("send_mail API called")
+        console.log("send_mail API called",req.body.send_time)
+        num = req.params.num
         id = req.session.user_id
         to_recipients = req.body.to_recipients
         cc_recipients = req.body.cc_recipients
         subject = req.body.subject
         content = req.body.content
         is_draft = req.body.is_draft
+        is_scheduled = req.body.is_scheduled
         send_time = req.body.send_time
         if (id){
-            send_mail(id,subject,content,to_recipients,cc_recipients,is_draft,send_time)
+            if (num != 0){
+                delete_draft(id,num)
+                .then(output => {
+                    console.log("deleted old draft")
+                })
+                .catch(err => {
+                    console.log("error deleting draft")
+                    res.send([[{"status":"err_editing_draft"}]])
+                })
+            }
+            send_mail(id,subject,content,to_recipients,cc_recipients,is_draft,is_scheduled,send_time)
             .then(output => {
+                console.log("mail sent")
                 res.send(output)
             })
             .catch(err => {

@@ -51,7 +51,7 @@ create table recipient(
     deleted boolean not null default false,
     -- deleted permanently
     primary key(sender_id, mail_num, id),
-    foreign key(sender_id, mail_num) references mail(sender_id, mail_num),
+    foreign key(sender_id, mail_num) references mail(sender_id, mail_num) on delete cascade,
     foreign key(id) references mail_user(id)
 );
 

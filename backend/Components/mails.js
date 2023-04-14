@@ -45,12 +45,43 @@ async function get_sent_mail (id, sender_id, mail_num) {
 }
 
 async function get_draft(id, mail_num) {
+    queries = ["SELECT * from mail where sender_id = $1 and mail_num = $2;"]
+    params = [[id, mail_num]]
+    queries.push("SELECT id from recipient where sender_id = $1 and mail_num = $2 and is_cc is false;")
+    params.push([id, mail_num])
+    queries.push("SELECT id from recipient where sender_id = $1 and mail_num = $2 and is_cc is true;")
+    params.push([id, mail_num])
+    try {
+        output = await execute(queries,params)
+        return output
+    }
+    catch (error) {
+        return [[{"status":"err_run_query"}]]
+    }
 }
 
-async function send_mail (id, subject, content, to_recipients, cc_recipients, is_draft, send_time) {
+async function delete_draft(id, mail_num) {
+    queries = ["DELETE from mail where sender_id = $1 and mail_num = $2;"]
+    params = [[id, mail_num]]
+    try {
+        output = await execute(queries,params)
+        return output
+    }
+    catch (error) {
+        return [[{"status":"err_run_query"}]]
+    }
+}
+
+async function send_mail (id, subject, content, to_recipients, cc_recipients, is_draft, is_scheduled, send_time) {
     console.log("send_mail function called")
-    queries = ["INSERT into mail values ($1, 1+(select num_mails from mail_user where id=$2), (select now from now()), $3, $4, $5, $6, $7);"]
-    params = [[id, id, subject, content, is_draft, false, false]]
+    if (is_scheduled) {
+        queries = ["INSERT into mail values ($1, 1+(select num_mails from mail_user where id=$2), $3, $4, $5, $6, $7, $8);"]
+        params = [[id, id, send_time, subject, content, is_draft, false, false]]
+    }
+    else {
+        queries = ["INSERT into mail values ($1, 1+(select num_mails from mail_user where id=$2), (select now from now()), $3, $4, $5, $6, $7);"]
+        params = [[id, id, subject, content, is_draft, false, false]]
+    }
     queries.push("UPDATE mail_user set num_mails = 1+(select num_mails from mail_user where id=$1) where id=$1;")
     params.push([id])
     for (recipient of to_recipients) {
@@ -70,4 +101,4 @@ async function send_mail (id, subject, content, to_recipients, cc_recipients, is
     }
 }
 
-module.exports = { get_mailbox, get_new_mails, get_received_mail, get_sent_mail, get_draft, send_mail }
+module.exports = { get_mailbox, get_new_mails, get_received_mail, get_sent_mail, get_draft, delete_draft, send_mail }

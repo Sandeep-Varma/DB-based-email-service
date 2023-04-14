@@ -5,74 +5,97 @@ const ComposePage = ()=>{
     const navigate = useNavigate();
     const { num } = useParams();
     const [server_error, setServerError] = useState(false);
+    const [draft_not_found, setDraftNotFound] = useState(false);
     const [logged_in, setLoggedIn] = useState(false);
     const [done, setDone] = useState(false);
     
-    const [to, setTo] = useState([]);
-    const [cc, setCc] = useState([]);
+    const [to_string, setToString] = useState("");
+    const [cc_string , setCcString] = useState("");
+    const [rec_empty, setRecEmpty] = useState(false);
     const [subject, setSubject] = useState("");
     const [content, setContent] = useState("");
     const [date, setDate] = useState("");
     const [time, setTime] = useState("");
-    const [dt, setDt] = useState(new Date().getTime());
-    const [is_scheduled, setIsScheduled] = useState(false);
+    const [scheduled, setIsScheduled] = useState(false);
+    const [dt_filled, setDtFilled] = useState(true);
+    const [not_found_ID, setNotFoundID] = useState("0");
+
+    const check_ids = async (ids)=>{
+        try {
+            let response = await fetch('http://localhost:4000/check_ids', {
+                method: 'POST',
+                mode: 'cors',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept':'application/json'
+                },
+                body: JSON.stringify({
+                    ids_list: ids
+                })
+            })
+            response = await response.json()
+            return response[0][0].status;
+        }
+        catch (err){
+            return "err_checking_valid_ids";
+        }
+    }
     
     const send_mail = (draft)=>{
-        if(is_scheduled){
-            if (date === "" || time === ""){
-                setDt(new Date().getTime());
-            }
-            else{
-                setDt(new Date(date+" "+time).getTime());
-            }
-        }
-        fetch('http://localhost:4000/send_mail', {
-            method: 'POST',
-            mode: 'cors',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept':'application/json'
-            },
-            body: JSON.stringify({
-                to_recipients: to,
-                cc_recipients: cc,
-                subject: subject,
-                content: content,
-                is_draft: draft,
-                time: dt
-            })
-        })
-        .then(response=>response.json())
-        .then(
-            async (response)=>{
-                console.log(response)
-                if (response[0][0].status === "not_logged_in") navigate("/login");
-                else setLoggedIn(true);
-                if (response[0][0].status.startsWith("err_")) setServerError(true);
-                else {
-                    // if (is_draft) navigate("/mail/drafts");
-                    // else navigate("/mail/sent");
-                    navigate("/mail/inbox");
+        setDtFilled(true);
+        setRecEmpty(false);
+        setNotFoundID("0");
+        let to = to_string.replace(/[\s\n]/g,',').split(',').filter(s => s)
+        let cc = cc_string.replace(/[\s\n]/g,',').split(',').filter(s => s)
+        cc = cc.filter(x => !(to.includes(x)))
+        to = Array.from(new Set(to))
+        cc = Array.from(new Set(cc))
+        if(scheduled && (date === "" || time === "")) setDtFilled(false);
+        else if (to.length === 0 && cc.length === 0) setRecEmpty(true);
+        else{
+            let recipients_list = to.concat(cc)
+            check_ids(recipients_list)
+            .then(output => {
+                if (output.startsWith("err_")) setServerError(true);
+                else if (output !== "0") setNotFoundID(output);
+                else{
+                    fetch('http://localhost:4000/send_mail/'+num, {
+                        method: 'POST',
+                        mode: 'cors',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept':'application/json'
+                        },
+                        body: JSON.stringify({
+                            to_recipients: to,
+                            cc_recipients: cc,
+                            subject: subject,
+                            content: content,
+                            is_draft: draft,
+                            is_scheduled: scheduled,
+                            send_time: date+" "+time
+                        })
+                    })
+                    .then(response=>response.json())
+                    .then(
+                        async (response)=>{
+                            if (response[0][0].status === "not_logged_in") navigate("/login");
+                            else setLoggedIn(true);
+                            if (response[0][0].status.startsWith("err_")) setServerError(true);
+                            else {
+                                // if (is_draft) navigate("/mail/drafts");
+                                // else navigate("/mail/sent");
+                                navigate("/mail/inbox");
+                            }
+                        }
+                    )
                 }
-            }
-        )
+            })
+        }
     }
 
-    const check_id = (id)=>{
-        fetch('http://localhost:4000/check_id/'+id, {
-            method: 'GET',
-            mode: 'cors',
-            credentials: 'include',
-        })
-        .then(response=>response.json())
-        .then(
-            async (response)=>{
-                if (response[0][0].status === "0") return true;
-                else return false;
-            }
-        )
-    }
     
     useEffect(()=>{
         const f=async()=>{
@@ -84,12 +107,25 @@ const ComposePage = ()=>{
             .then(response=>response.json())
             .then(
                 async (response)=>{
-                    if (response[0][0].status === "not_logged_in") navigate("/login");
-                    else setLoggedIn(true);
-                    if (response[0][0].status.startsWith("err_")) setServerError(true);
+                    if (response[0][0].status === "not_logged_in") navigate("/login")
+                    else setLoggedIn(true)
+                    if (response[0][0].status.startsWith("err_")) setServerError(true)
                     else {
                         if (num !== "0"){
-                            
+                            if (response[1].length === 0) setDraftNotFound(true)
+                            else {
+                                console.log(response)
+                                setSubject(response[1][0].subject)
+                                setContent(response[1][0].content)
+                                let temp = ""
+                                for (let i=0; i<response[2].length-1; i++) temp = temp.concat(response[2][i].id,", ")
+                                temp = temp.concat(response[2][response[2].length-1].id)
+                                setToString(temp)
+                                temp = ""
+                                for (let i=0; i<response[3].length-1; i++) temp = temp.concat(response[3][i].id,", ")
+                                temp = temp.concat(response[3][response[3].length-1].id)
+                                setCcString(temp)
+                            }
                         }
                     }
                     setDone(true)
@@ -117,6 +153,11 @@ const ComposePage = ()=>{
             </div>
         )
     }
+    else if (draft_not_found) return (
+        <div>
+            <h1>Draft not found</h1>
+        </div>
+    )
     else return (
         <div style={{
             display: "flex",
@@ -124,7 +165,7 @@ const ComposePage = ()=>{
             alignItems: "center",
             marginTop: "50px",
             // backgroundColor: '#530E2D'
-          }}>
+        }}>
             <h1 style={{fontSize: "36px", marginBottom: "30px", color: "#333"}}>Compose</h1>
             <form style={{
               display: "flex",
@@ -139,12 +180,8 @@ const ComposePage = ()=>{
                 <label style={{fontSize: "18px", marginBottom: "10px", color: "#333"}}>To</label>
                 <input
                     type="text"
-                    value={to}
-                    onChange={e => {
-                            // split the string by comma and add the values to the array
-                            setTo(e.target.value.split(','))
-                        }
-                    }
+                    value={to_string}
+                    onChange={e => setToString(e.target.value)}
                     style={{
                     fontSize: "18px",
                     padding: "10px",
@@ -158,8 +195,8 @@ const ComposePage = ()=>{
                 <label style={{fontSize: "18px", marginBottom: "10px", color: "#333"}}>Cc</label>
                 <input
                     type="text"
-                    value={cc}
-                    onChange={e => setCc(e.target.value.split(','))}
+                    value={cc_string}
+                    onChange={e => setCcString(e.target.value)}
                     style={{
                     fontSize: "18px",
                     padding: "10px",
@@ -203,7 +240,7 @@ const ComposePage = ()=>{
                     <button
                         type="button"
                         onClick={e => {
-                            if (is_scheduled){
+                            if (scheduled){
                                 setIsScheduled(false);
                             }
                             else{
@@ -223,7 +260,7 @@ const ComposePage = ()=>{
                         Schedule Mail
                     </button>
                 {/* add a time and date picker that is shown only on clicking a button*/}
-                {is_scheduled &&
+                {scheduled &&
                 <div style={{display: "flex", flexDirection: "row", alignItems: "left", justifyContent: "space-between", width: "25%"}}>
                 <label style={{fontSize: "18px", marginBottom: "10px", color: "#333"}}></label>
                 <input
@@ -257,6 +294,9 @@ const ComposePage = ()=>{
                 />
                 </div>
                 }
+                {!dt_filled && <p style={{color: "red"}}>Please select a date and time</p>}
+                {not_found_ID !== "0" && <p style={{color: "red"}}>"{not_found_ID}" is not a user</p>}
+                {rec_empty && <p style={{color: "red"}}>Atleast 1 recipient must be there</p>}
                 {/* Put two buttons side by side */}
                     <div style={{
                         display: "flex",
@@ -287,109 +327,8 @@ const ComposePage = ()=>{
                     boxShadow: "0 0 5px #888888"
                 }}>Save as Draft</button></div>
             </form>
-          </div>
+        </div>
     )
-    // return (
-    //     <>
-    //     <div style = {{backgroundColor: '#84c3bd'}}>
-    //     <div style={{ display: "flex", flexDirection: "column", justifyContent: "center"}}>
-    //     <h1 style={{ textAlign: "center" }}>Student Home</h1>
-    //     <table style={{borderCollapse: 'collapse', width: '60%', margin: '0 auto'}}>
-    //         <tbody>
-    //         <tr>
-    //         <th style={{border: '1px solid black', padding: '8px', backgroundColor: '#e0c7c8'}}>ID</th>
-    //         <th style={{border: '1px solid black', padding: '8px', backgroundColor: '#f2f2f2'}}>{id}</th>
-    //         </tr>
-    //         <tr>
-    //         <th style={{border: '1px solid black', padding: '8px', backgroundColor: '#e0c7c8'}}>NAME</th>
-    //         <th style={{border: '1px solid black', padding: '8px', backgroundColor: '#f2f2f2'}}>{name}</th>
-    //         </tr>
-    //         <tr>
-    //         <th style={{border: '1px solid black', padding: '8px', backgroundColor: '#e0c7c8'}}>DEPARTMENT</th>
-    //         <th style={{border: '1px solid black', padding: '8px', backgroundColor: '#f2f2f2'}}>{dept}</th>
-    //         </tr>
-    //         <tr>
-    //         <th style={{border: '1px solid black', padding: '8px', backgroundColor: '#e0c7c8'}}>TOTAL CREDITS</th>
-    //         <th style={{border: '1px solid black', padding: '8px', backgroundColor: '#f2f2f2'}}>{credits}</th>
-    //         </tr>
-    //         </tbody>
-    //     </table>
-    //     {running.length>0 && <><div style={{clear: 'both'}}></div>
-    //         <h2 style={{textAlign: 'center'}}>Running Semester - {running[0].semester} {running[0].year}</h2>
-    //         <table style={{borderCollapse: 'collapse', width: '80%', margin: '0 auto'}}>
-    //                     <thead>
-    //                         <tr style={{backgroundColor: '#e0c7c8'}}>
-    //                         <th style={{border: '1px solid black', padding: '8px'}}>Course ID</th>
-    //                         <th style={{border: '1px solid black', padding: '8px'}}>Course Title</th>
-    //                         <th style={{border: '1px solid black', padding: '8px'}}>Credits</th>
-    //                         <th style={{border: '1px solid black', padding: '8px'}}>Grade</th>
-    //                         <th style={{border: '1px solid black', padding: '8px'}}>Drop</th>
-    //                         </tr>
-    //                     </thead>
-    //                     <tbody>
-    //                         {
-    //                         Object.keys(running).map((h,j) => {
-    //                             let p = running[h];
-    //                             let n = "/course/" + p.course_id;
-    //                             return (
-    //                             <tr key={j} style={{border: '1px solid black', backgroundColor: '#f2f2f2'}}>
-    //                                 <td style={{border: '1px solid black', padding: '8px'}}><a href={n}>{p.course_id}</a></td>
-    //                                 <td style={{border: '1px solid black', padding: '8px'}}>{p.title}</td>
-    //                                 <td style={{border: '1px solid black', padding: '8px'}}>{p.credits}</td>
-    //                                 <td style={{border: '1px solid black', padding: '8px'}}>{p.grade}</td>
-    //                                 <td style={{border: '1px solid black', padding: '8px'}} onClick={() => {if (window.confirm('Are you sure you wish to deregister this course?')) drop_course(p.course_id)}}><button style={{backgroundColor: 'red', color: 'white', padding: '8px', border: 'none', borderRadius: '5px'}}>Drop</button></td>
-    //                             </tr>
-    //                             )
-    //                         })
-    //                         }
-    //                     </tbody>
-    //                 </table>
-    // </>}
-    // {running.length===0 && <>
-    //         <h2 style={{textAlign: 'center', color: 'red'}}>No Courses in Running Semester</h2>
-    //     </>
-    // }    
-    //     {Object.keys(data).map((k, i) => {
-    //         let d = data[k]
-    //         return (
-    //             <div style={{ display: "flex", flexDirection: "column"}}>
-    //                 <h2 style={{textAlign: 'center'}}>{d[0].semester} {d[0].year}</h2>
-    //                 <table style={{borderCollapse: 'collapse', width: '80%', margin: '0 auto'}}>
-    //                     <thead>
-    //                         <tr style={{backgroundColor: '#e0c7c8'}}>
-    //                         <th style={{border: '1px solid black', padding: '8px'}}>Course ID</th>
-    //                         <th style={{border: '1px solid black', padding: '8px'}}>Course Title</th>
-    //                         <th style={{border: '1px solid black', padding: '8px'}}>Credits</th>
-    //                         <th style={{border: '1px solid black', padding: '8px'}}>Grade</th>
-    //                         </tr>
-    //                     </thead>
-    //                     <tbody>
-    //                         {
-    //                         Object.keys(d).map((h,j) => {
-    //                             let p = d[h];
-    //                             let n = "/course/" + p.course_id;
-    //                             return (
-    //                             <tr key={j} style={{border: '1px solid black', backgroundColor: '#f2f2f2'}}>
-    //                                 <td style={{border: '1px solid black', padding: '8px'}}><a href={n}>{p.course_id}</a></td>
-    //                                 <td style={{border: '1px solid black', padding: '8px'}}>{p.title}</td>
-    //                                 <td style={{border: '1px solid black', padding: '8px'}}>{p.credits}</td>
-    //                                 <td style={{border: '1px solid black', padding: '8px'}}>{p.grade}</td>
-    //                             </tr>
-    //                             )
-    //                         })
-    //                         }
-    //                     </tbody>
-    //                 </table>
-    //             </div>
-    //         )
-
-    //     })}
-    //     </div>
-    //     </div>
-    //     </>
-    // )
-
 }
-
 
 export default ComposePage;
