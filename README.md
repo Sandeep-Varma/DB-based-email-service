@@ -24,3 +24,5 @@ Admin page
 - may be set permissions to selected users to send mails to a mailing list
 
 attahcments
+
+use "on delete cascade" for simpler update queries
