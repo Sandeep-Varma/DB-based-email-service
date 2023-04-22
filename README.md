@@ -13,3 +13,14 @@ Buttons for each mail - star/unstar, delete, etc
 - move to draft in scheduled page
 
 Reply threading
+- what if first mail is deleted
+
+Scheduled mail
+- save time
+
+Admin page
+- create new mailing lists
+- add users to mailing lists
+- may be set permissions to selected users to send mails to a mailing list
+
+attahcments
