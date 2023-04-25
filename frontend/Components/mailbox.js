@@ -28,14 +28,14 @@ const MailPage = () => {
                 mail_num: mail_num
             })
         })
-            .then(response => response.json())
-            .then(
-                async (response) => {
-                    console.log(response)
-                    setSelectedMail(response[1][0]);
-
-                }
-            )
+        .then(response => response.json())
+        .then(
+            async (response) => {
+                console.log(response)
+                setSelectedMail(response[1][0]);
+                setStarred(response[1][0].starred);
+            }
+        )
     }
 
     useEffect(() => {
@@ -64,6 +64,30 @@ const MailPage = () => {
         }
         f();
     }, [navigate, box]);
+
+    const modify = (sender_id, mail_num, starred, is_read) => {
+        fetch('http://localhost:4000/modify', {
+            method: 'POST',
+            mode: 'cors',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                sender_id: sender_id,
+                mail_num: mail_num,
+                s: starred,
+                r: is_read
+            })
+        })
+        .then(response => response.json())
+        .then(
+            async (response) => {
+                if (response[0][0].status !== "0") setServerError(true);
+            }
+        )
+    }
 
     if (!done) return (
         <div>

@@ -54,6 +54,29 @@ async function get_received_mail (id, sender_id, mail_num) {
 async function get_sent_mail (id, sender_id, mail_num) {
 }
 
+async function modify (id, sender_id, mail_num, starred, is_read){
+    if (id == sender_id){
+        queries = ["update mail set starred = $3 where sender_id = $1 and mail_num = $2"]
+        params = [[seender_id, mail_num, starred]]
+        try {
+            output = await execute(queries,params)
+            return output
+        } catch (error) {
+            return [[{"status":"err_run_query"}]]
+        }
+    }
+    else{
+        queries = ["update recipient set starred = $3, read = $4 where sender_id = $1 and mail_num = $2 and id = $5"]
+        params = [[sender_id, mail_num, starred, is_read, id]]
+        try {
+            output = await execute(queries,params)
+            return output
+        } catch (error) {
+            return [[{"status":"err_run_query"}]]
+        }
+    }
+}
+
 async function get_draft(id, mail_num) {
     queries = ["SELECT * from mail where sender_id = $1 and mail_num = $2 and is_draft is true;"]
     params = [[id, mail_num]]
@@ -109,4 +132,4 @@ async function send_mail (id, subject, content, to_recipients, cc_recipients, is
     }
 }
 
-module.exports = { get_mailbox, get_new_mails, get_received_mail, get_sent_mail, get_draft, delete_draft, send_mail }
+module.exports = { get_mailbox, get_new_mails, get_received_mail, get_sent_mail, modify, get_draft, delete_draft, send_mail }

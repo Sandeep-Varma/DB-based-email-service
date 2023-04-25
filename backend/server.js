@@ -1,5 +1,5 @@
 const { execute, executemany } = require('./Components/postgres_connect')
-const { get_mailbox, get_new_mails, get_received_mail, get_sent_mail, get_draft, delete_draft, send_mail } = require('./Components/mails')
+const { get_mailbox, get_new_mails, get_received_mail, get_sent_mail, modify, get_draft, delete_draft, send_mail } = require('./Components/mails')
 
 const port = 4000
 
@@ -247,18 +247,25 @@ app.post('/send_mail/:num',
     }
 )
 
-app.post('/mark_as_read',
-    async (req,res)=>{
-    }
-)
-
 app.post('/move_to_trash',
     async (req,res)=>{
     }
 )
 
-app.post('/mark_star',
+app.post('/modify',
     async (req,res)=>{
+        id = req.session.user_id
+        if (id){
+            modify(id, req.body.sender_id, req.body.mail_num, req.body.s, req.body.r)
+            .then(output => {
+                console.log("Modified")
+                res.send(output)
+            })
+            .catch(err => {
+                res.send([[{"status":"err_modifying_mail"}]])
+            })
+        }
+        else res.send([[{ "status":"not_logged_in"}]])
     }
 )
 

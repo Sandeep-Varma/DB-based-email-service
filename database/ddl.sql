@@ -31,6 +31,7 @@ create table mail(
     content varchar(1000), ---------------------------- or text?
     --------------------------------------------------- another attribute for number of attachments?
     is_draft boolean not null default false,
+    starred boolean not null default false,
     trashed boolean not null default false,
     -- in trash of sender
     deleted boolean not null default false,
