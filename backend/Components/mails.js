@@ -5,7 +5,7 @@ async function get_mailbox (id, box) {
     params = [[id]]
 
     if (box == "inbox") {
-        queries.push("select m.sender_id, m.mail_num, time, subject, read, starred \
+        queries.push("select m.sender_id, m.mail_num, time, subject, read, r.starred \
                     from mail as m join recipient as r using (sender_id, mail_num) \
                     where (r.id = $1 or r.id in (select list_id from mailing_list where id = $1)) \
                     and time < (select now from now()) \
@@ -56,8 +56,10 @@ async function get_sent_mail (id, sender_id, mail_num) {
 
 async function modify (id, sender_id, mail_num, starred, is_read){
     if (id == sender_id){
-        queries = ["update mail set starred = $3 where sender_id = $1 and mail_num = $2"]
-        params = [[seender_id, mail_num, starred]]
+        console.log("Hello")
+        queries = ["update mail set starred = $1 where sender_id = $2 and mail_num = $3"]
+        params = [[starred, sender_id, mail_num]]
+        console.log(params)
         try {
             output = await execute(queries,params)
             return output
@@ -66,8 +68,8 @@ async function modify (id, sender_id, mail_num, starred, is_read){
         }
     }
     else{
-        queries = ["update recipient set starred = $3, read = $4 where sender_id = $1 and mail_num = $2 and id = $5"]
-        params = [[sender_id, mail_num, starred, is_read, id]]
+        queries = ["update recipient set starred = $1, read = $2 where sender_id = $3 and mail_num = $4 and id = $5"]
+        params = [[starred, is_read, sender_id, mail_num, id]]
         try {
             output = await execute(queries,params)
             return output

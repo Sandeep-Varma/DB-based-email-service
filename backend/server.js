@@ -256,12 +256,13 @@ app.post('/modify',
     async (req,res)=>{
         id = req.session.user_id
         if (id){
-            modify(id, req.body.sender_id, req.body.mail_num, req.body.s, req.body.r)
+            modify(id, req.body.sender_id, req.body.mn, req.body.s, req.body.r)
             .then(output => {
                 console.log("Modified")
                 res.send(output)
             })
             .catch(err => {
+                console.log(err)
                 res.send([[{"status":"err_modifying_mail"}]])
             })
         }
