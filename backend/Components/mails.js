@@ -56,10 +56,8 @@ async function get_sent_mail (id, sender_id, mail_num) {
 
 async function modify (id, sender_id, mail_num, starred, is_read){
     if (id == sender_id){
-        console.log("Hello")
         queries = ["update mail set starred = $1 where sender_id = $2 and mail_num = $3"]
         params = [[starred, sender_id, mail_num]]
-        console.log(params)
         try {
             output = await execute(queries,params)
             return output

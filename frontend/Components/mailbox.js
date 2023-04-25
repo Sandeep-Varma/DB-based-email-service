@@ -123,7 +123,8 @@ const MailPage = () => {
 
                     <div className="mark-read-unread" onClick={(e) => {
                       e.stopPropagation();
-                      modify(mail.sender_id, mail.mail_num, mail.starred, !mail.read);
+                      modify(mail.sender_id, mail.mail_num, mail.starred, !(mail.read));
+                      mail.read = !(mail.read)
                     }}>
                       {mail.read ? <FontAwesomeIcon icon={faEnvelope} /> : <FontAwesomeIcon icon={faEnvelope} />}
                       {/* <span>{mail.read ? 'Mark as unread' : 'Mark as read'}</span> */}
@@ -131,7 +132,8 @@ const MailPage = () => {
 
                     <div className={`mail-star${mail.starred ? '-starred' : ''}`} onClick={(e) => {
                       e.stopPropagation();
-                      modify(mail.sender_id, mail.mail_num, !mail.starred, mail.read);
+                      modify(mail.sender_id, mail.mail_num, !(mail.starred), mail.read);
+                      mail.starred = !(mail.starred)
                     }}>
                       &#9733;
                     </div>
