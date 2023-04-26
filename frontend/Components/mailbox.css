@@ -125,7 +125,7 @@
 
 .mail-item {
   font-size: 1.5em;
-  cursor: pointer;
+  /* cursor: pointer; */
 }
 
 .resize-handle {
