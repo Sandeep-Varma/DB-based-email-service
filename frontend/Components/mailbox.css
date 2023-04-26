@@ -150,3 +150,13 @@
   background-color: #007bff;
   width: wrap-content;
 }
+
+.mail-status {
+  font-weight: bold;
+  color: aqua;
+}
+
+.mail-status-read {
+  
+  color: #3a3c3e;
+}
