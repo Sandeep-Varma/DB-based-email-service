@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelopeOpen } from '@fortawesome/free-solid-svg-icons';
 // import React, { useEffect, useState } from 'react';
 import "./mailbox.css"
 
@@ -38,6 +39,10 @@ const MailPage = () => {
           setSelectedMail(response[1][0]);
         }
       )
+  }
+
+  const Deletmail = (sender_id, mail_num) => {
+    console.log("delete called")
   }
 
   useEffect(() => {
@@ -84,10 +89,11 @@ const MailPage = () => {
         r: is_read
       })
     })
-    .then(response => response.json())
-    .then(response => {
-      if (response[0][0].status === "not_logged_in") navigate("/login");
-      else if (response[0][0].status !== "0") { setServerError(true); console.log(response)} })
+      .then(response => response.json())
+      .then(response => {
+        if (response[0][0].status === "not_logged_in") navigate("/login");
+        else if (response[0][0].status !== "0") { setServerError(true); console.log(response) }
+      })
   }
 
   if (!done) return (
@@ -126,7 +132,7 @@ const MailPage = () => {
                       modify(mail.sender_id, mail.mail_num, mail.starred, !(mail.read));
                       mail.read = !(mail.read)
                     }}>
-                      {mail.read ? <FontAwesomeIcon icon={faEnvelope} /> : <FontAwesomeIcon icon={faEnvelope} />}
+                      {mail.read ? <FontAwesomeIcon icon={faEnvelope} /> : <FontAwesomeIcon icon={faEnvelopeOpen} />}
                       {/* <span>{mail.read ? 'Mark as unread' : 'Mark as read'}</span> */}
                     </div>
 
@@ -150,10 +156,16 @@ const MailPage = () => {
           {/* Right box for displaying selected email */}
           {selectedMail && (
             <div className="mail-display">
-              <h2>{selectedMail.subject}</h2>
-              <p>Sent at: {selectedMail.time}</p>
-              <p>Content:{selectedMail.content}</p>
-              <p>{selectedMail.body}</p>
+              <div className="delete-button" onClick={() => Deletmail(selectedMail.sender_id, selectedMail.mail_num)}>
+                Delete Mail
+                </div>
+              <div>
+                <h2>{selectedMail.subject}</h2>
+                <p>Sent at: {selectedMail.time}</p>
+                <p>Content:{selectedMail.content}</p>
+                <p>{selectedMail.body}</p>
+              </div>
+              
             </div>
           )}
         </div>

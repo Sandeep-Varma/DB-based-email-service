@@ -41,9 +41,13 @@
 
 .mail-star{
   font-size: 1.5em;
+  cursor: pointer;
+
 }
 .mail-star-starred{
   font-size: 1.5em;
+  color: #f1c40f;
+  cursor: pointer;
 }
 
 .mail-display-container {
@@ -119,9 +123,9 @@
   flex: 1;
 }
 
-.mail-item .mail-star {
+.mail-item {
   font-size: 1.5em;
-  cursor: pointer;
+  /* cursor: pointer; */
 }
 
 .resize-handle {
@@ -138,4 +142,21 @@
   color: #262728;
   cursor: pointer;
   margin-right: 3px;
+}
+
+.delete-button{
+  color: #262728;
+  cursor: pointer;
+  background-color: #007bff;
+  width: wrap-content;
+}
+
+.mail-status {
+  font-weight: bold;
+  color: aqua;
+}
+
+.mail-status-read {
+  
+  color: #3a3c3e;
 }
