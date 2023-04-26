@@ -5,7 +5,7 @@ async function get_mailbox (id, box) {
     params = [[id]]
 
     if (box == "inbox") {
-        queries.push("select m.sender_id, m.mail_num, time, subject, read, r.starred \
+        queries.push("select m.sender_id, m.mail_num, m.time, m.subject, r.read, r.starred \
                     from mail as m join recipient as r using (sender_id, mail_num) \
                     where (r.id = $1 or r.id in (select list_id from mailing_list where id = $1)) \
                     and time < (select now from now()) \
@@ -14,17 +14,44 @@ async function get_mailbox (id, box) {
         params.push([id])
     }
     else if (box == "starred") {
-        queries.push("select m.sender_id, m.mail_num, time, subject, read \
+        queries.push("select m.sender_id, m.mail_num, m.time, m.subject, r.read, r.starred \
                     from mail as m join recipient as r using (sender_id, mail_num) \
-                    where r.id = $1 and time < (select now from now()) \
-                    and not is_draft and not r.trashed and not r.deleted and starred \
+                    where (r.id = $1 or r.id in (select list_id from mailing_list where id = $1)) \
+                    and time < (select now from now()) \
+                    and not is_draft and not r.trashed and not r.deleted and r.starred \
                     order by time desc;")
         params.push([id])
     }
-    // else if (box == "sent") {}
-    // else if (box == "drafts") {}
-    // else if (box == "trash") {}
-    // else if (box == "scheduled") {}
+    else if (box == "sent") {
+        queries.push("select * from mail where sender_id = $1 and time < (select now from now()) \
+                    and not is_draft and not trashed and not deleted \
+                    order by time desc;")
+        params.push([id])
+    }
+    else if (box == "drafts") {
+        queries.push("select * from mail where sender_id = $1 and is_draft \
+                    and not trashed and not deleted \
+                    order by time desc;")
+        params.push([id])
+    }
+    else if (box == "trash") {
+        queries.push("select m.sender_id, m.mail_num, m.time, m.subject, r.read, r.starred \
+                    from mail as m join recipient as r using (sender_id, mail_num) \
+                    where (r.id = $1 or r.id in (select list_id from mailing_list where id = $1)) \
+                    and time < (select now from now()) \
+                    and not is_draft and r.trashed and not r.deleted \
+                    order by time desc;")
+        params.push([id])
+        queries.push("select * from mail where sender_id = $1 and trashed and not deleted \
+                    order by time desc;")
+        params.push([id])
+    }
+    else if (box == "scheduled") {
+        queries.push("select * from mail where sender_id = $1 and time > (select now from now()) \
+                    and not is_draft and not trashed and not deleted \
+                    order by time desc;")
+        params.push([id])
+    }
     else return [[{"status":"invalid_box"}]]
 
     try {
@@ -38,18 +65,24 @@ async function get_mailbox (id, box) {
 async function get_new_mails (id, time) {
 }
 
-async function get_received_mail (id, sender_id, mail_num) {
-    try {
-        queries = ["update recipient set read = 'true' where sender_id = $1 and mail_num = $2 and id = $3;"]
-        params = [[sender_id, mail_num, id]]
-        output = await execute(queries,params)
-    } catch (error) {
-        return [[{"status":"err_run_query"}]]
+async function get_mail (id, sender_id, mail_num) {
+    if (id === sender_id){
+        queries = ["select * from mail where sender_id = $1 and mail_num = $2;"]
+        params = [[sender_id, mail_num]]
     }
-    queries = ["select m.time, m.subject, m.content, r.is_cc, r.read, r.starred, r.trashed, r.deleted \
-                from mail as m join recipient as r using (sender_id, mail_num) \
-                where r.sender_id = $1 and r.mail_num = $2 and r.id = $3;"]
-    params = [[sender_id, mail_num, id]]
+    else {
+        try {
+            queries = ["update recipient set read = 'true' where sender_id = $1 and mail_num = $2 and id = $3;"]
+            params = [[sender_id, mail_num, id]]
+            output = await execute(queries,params)
+        } catch (error) {
+            return [[{"status":"err_run_query"}]]
+        }
+        queries = ["select m.time, m.subject, m.content, r.is_cc, r.read, r.starred, r.trashed, r.deleted \
+                    from mail as m join recipient as r using (sender_id, mail_num) \
+                    where r.sender_id = $1 and r.mail_num = $2 and r.id = $3;"]
+        params = [[sender_id, mail_num, id]]
+    }
     try {
         output = await execute(queries,params)
         return output
@@ -58,13 +91,22 @@ async function get_received_mail (id, sender_id, mail_num) {
     }
 }
 
-async function get_sent_mail (id, sender_id, mail_num) {
-}
-
-async function modify (id, sender_id, mail_num, starred, is_read){
+async function modify (id, sender_id, mail_num, mod){
     if (id == sender_id){
-        queries = ["update mail set starred = $1 where sender_id = $2 and mail_num = $3"]
-        params = [[starred, sender_id, mail_num]]
+        queries = []
+        params = []
+        if (mod.s){
+            queries.push("update mail set starred = $1 where sender_id = $2 and mail_num = $3")
+            params.push([mod.s, sender_id, mail_num])
+        }
+        if (mod.t){
+            queries.push("update mail set trashed = $1 where sender_id = $2 and mail_num = $3")
+            params.push([mod.t, sender_id, mail_num])
+        }
+        if (mod.d){
+            queries.push("update mail set deleted = $1 where sender_id = $2 and mail_num = $3")
+            params.push([mod.d, sender_id, mail_num])
+        }
         try {
             output = await execute(queries,params)
             return output
@@ -73,8 +115,24 @@ async function modify (id, sender_id, mail_num, starred, is_read){
         }
     }
     else{
-        queries = ["update recipient set starred = $1, read = $2 where sender_id = $3 and mail_num = $4 and id = $5"]
-        params = [[starred, is_read, sender_id, mail_num, id]]
+        queries = []
+        params = []
+        if (mod.s){
+            queries.push("update recipient set starred = $1 where sender_id = $2 and mail_num = $3 and id = $4")
+            params.push([mod.s, sender_id, mail_num, id])
+        }
+        if (mod.r){
+            queries.push("update recipient set read = $1 where sender_id = $2 and mail_num = $3 and id = $4")
+            params.push([mod.r, sender_id, mail_num, id])
+        }
+        if (mod.t){
+            queries.push("update recipient set trashed = $1 where sender_id = $2 and mail_num = $3 and id = $4")
+            params.push([mod.t, sender_id, mail_num, id])
+        }
+        if (mod.d){
+            queries.push("update recipient set deleted = $1 where sender_id = $2 and mail_num = $3 and id = $4")
+            params.push([mod.d, sender_id, mail_num, id])
+        }
         try {
             output = await execute(queries,params)
             return output
@@ -139,4 +197,12 @@ async function send_mail (id, subject, content, to_recipients, cc_recipients, is
     }
 }
 
-module.exports = { get_mailbox, get_new_mails, get_received_mail, get_sent_mail, modify, get_draft, delete_draft, send_mail }
+module.exports = {
+    get_mailbox,
+    get_new_mails,
+    get_mail,
+    modify,
+    get_draft,
+    delete_draft,
+    send_mail
+}

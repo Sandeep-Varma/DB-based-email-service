@@ -18,7 +18,7 @@ const MailPage = () => {
 
 
   const FetchMail = (sender_id, mail_num) => {
-    fetch('http://localhost:4000/get_mail/' + box, {
+    fetch('http://localhost:4000/get_mail', {
       method: 'POST',
       mode: 'cors',
       credentials: 'include',
@@ -72,8 +72,8 @@ const MailPage = () => {
     f();
   }, [navigate, box]);
 
-  const modify = (sender_id, mail_num, starred, is_read) => {
-    console.log("modify called, starred: " + starred + ", is_read: " + is_read)
+  const modify = (sender_id, mail_num, modifications) => {
+    console.log("modify called, starred: " + modifications)
     fetch('http://localhost:4000/modify', {
       method: 'POST',
       mode: 'cors',
@@ -85,15 +85,14 @@ const MailPage = () => {
       body: JSON.stringify({
         sender_id: sender_id,
         mn: mail_num,
-        s: starred,
-        r: is_read
+        mod: modifications
       })
     })
-      .then(response => response.json())
-      .then(response => {
-        if (response[0][0].status === "not_logged_in") navigate("/login");
-        else if (response[0][0].status !== "0") { setServerError(true); console.log(response) }
-      })
+    .then(response => response.json())
+    .then(response => {
+      if (response[0][0].status === "not_logged_in") navigate("/login");
+      else if (response[0][0].status !== "0") { setServerError(true); console.log(response) }
+    })
   }
 
   if (!done) return (
@@ -129,7 +128,7 @@ const MailPage = () => {
 
                     <div className="mark-read-unread" onClick={(e) => {
                       e.stopPropagation();
-                      modify(mail.sender_id, mail.mail_num, mail.starred, !(mail.read));
+                      modify(mail.sender_id, mail.mail_num, {r:!(mail.read)});
                       mail.read = !(mail.read)
                     }}>
                       {mail.read ? <FontAwesomeIcon icon={faEnvelope} /> : <FontAwesomeIcon icon={faEnvelopeOpen} />}
@@ -138,7 +137,7 @@ const MailPage = () => {
 
                     <div className={`mail-star${mail.starred ? '-starred' : ''}`} onClick={(e) => {
                       e.stopPropagation();
-                      modify(mail.sender_id, mail.mail_num, !(mail.starred), mail.read);
+                      modify(mail.sender_id, mail.mail_num, {s:!(mail.starred)});
                       mail.starred = !(mail.starred)
                     }}>
                       &#9733;

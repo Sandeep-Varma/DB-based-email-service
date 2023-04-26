@@ -40,4 +40,7 @@ async function executemany (query, params){
     return output
 }
 
-module.exports = { execute, executemany }
+module.exports = {
+    execute,
+    executemany
+}
