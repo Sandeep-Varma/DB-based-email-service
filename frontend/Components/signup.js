@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
+import './styles.css'
 
 function SignUp() {
     const navigate = useNavigate();
@@ -9,9 +10,15 @@ function SignUp() {
     const [confirm_password, setConfirmPassword] = useState("");
     const [idexists, setIdExists] = useState(false);
     const [server_error, setServerError] = useState(false);
+    // const [isSignUpSuccessful, setIsSignUpSuccessful] = useState(false);
     
+   
     function call_post(e) {
         e.preventDefault();
+        // if(password !== confirm_password) {
+        //     alert("Password doesn't match");
+        //     return;
+        // }
         if (user_id && password && confirm_password && password === confirm_password) {
             let userData = {
                 user_id: user_id,
@@ -36,7 +43,10 @@ function SignUp() {
                     setIdExists(false);
                     if (response.status.startsWith("err_")) setServerError(true);
                     else if (response.status === "id_already_exists") setIdExists(true);
-                    else navigate("/home"); 
+                    else {
+                        alert("Sign up successful! Redirecting to login page...")
+                        navigate("/home");}
+                    // else setIsSignUpSuccessful(true); 
                 }
             )
             .catch(
@@ -45,14 +55,27 @@ function SignUp() {
                     setServerError(true);
                 }
             );
+
         }
         else {
             alert("Please enter a user ID and same password and confirm password");
         }
     }
+    
+    // function handleNavigateHome() {
+    //     navigate("/home");
+    // }
+    // useEffect(() => {
+    //     if(isSignUpSuccessful) {
+    //         const timer = setTimeout(() => {
+    //             navigate("/login");
+    //             }, 3000);
+    //         return () => clearTimeout(timer);
+    //     }
+        
 
     return (
-        <div>
+        <div className='container'>
             <h1>Create User</h1>
             <form>
                 <label>User ID</label>
@@ -85,7 +108,12 @@ function SignUp() {
                 <br />
                 {idexists && <p style={{color: "red"}}>ID already taken</p>}
                 {server_error && <p style={{color: "red"}}>Server error</p>}
-                <button type="submit" onClick={call_post}>Create User</button>
+                <button type="submit" onClick={call_post}>Sign up</button>
+                {/* {isSignUpSuccessful && 
+                <div>
+                    <p style={{color: "green"}}>Sign up successful!</p>
+                    <button onClick={handleNavigateHome}> Go to Home </button>
+                    </div>} */}
             </form>
         </div>
     );
