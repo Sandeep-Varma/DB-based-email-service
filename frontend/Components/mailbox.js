@@ -41,6 +41,31 @@ const MailPage = () => {
       )
   }
 
+  const FetchParentMail = (sender_id, mail_num) => {
+    fetch('http://localhost:4000/get_parent_mail', {
+      method: 'POST',
+      mode: 'cors',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        sender_id: sender_id,
+        mail_num: mail_num
+      })
+    })
+      .then(response => response.json())
+      .then(
+        async (response) => {
+          if (response[0][0].status === "not_logged_in") navigate("/login");
+          console.log(response)
+          // to do
+          
+        }
+      )
+  }
+
   const Deletmail = (sender_id, mail_num) => {
     console.log("delete called")
   }

@@ -91,6 +91,17 @@ async function get_mail (id, sender_id, mail_num) {
     }
 }
 
+async function get_parent_mail (sender_id, mail_num) {
+    queries = ["select * from mail where (sender_id, mail_num) = (select p_id, p_mail_num from reply where (id, mail_num) = ($1, $2));"]
+    params = [[sender_id, mail_num]]
+    try {
+        output = await execute(queries,params)
+        return output
+    } catch (error) {
+        return [[{"status":"err_run_query"}]]
+    }
+}
+
 async function modify (id, sender_id, mail_num, mod){
     if (id == sender_id){
         queries = []
@@ -201,6 +212,7 @@ module.exports = {
     get_mailbox,
     get_new_mails,
     get_mail,
+    get_parent_mail,
     modify,
     get_draft,
     delete_draft,

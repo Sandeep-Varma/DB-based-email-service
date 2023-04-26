@@ -154,6 +154,25 @@ app.post('/get_mail',
     }
 )
 
+app.post('/get_parent_mail',
+    async (req,res)=>{
+        id = req.session.user_id
+        box = req.params.box
+        if (id){
+            sender_id = req.body.sender_id
+            mail_num = req.body.mail_num
+            get_parent_mail(sender_id,mail_num)
+            .then(output => {
+                res.send(output)
+            })
+            .catch(err => {
+                res.send([[{"status":"err_fetching_mail"}]])
+            })
+        }
+        else res.send([[{ "status":"not_logged_in"}]])
+    }
+)
+
 app.get('/compose/:num',
     async (req,res)=>{
         id = req.session.user_id
