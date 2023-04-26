@@ -39,12 +39,17 @@ async function get_new_mails (id, time) {
 }
 
 async function get_received_mail (id, sender_id, mail_num) {
-    queries = ["update recipient set read = 'true' where sender_id = $1 and mail_num = $2 and id = $3;"]
-    params = [[sender_id, mail_num, id]]
-    queries.push("select m.time, m.subject, m.content, r.is_cc, r.read, r.starred, r.trashed, r.deleted \
+    try {
+        queries = ["update recipient set read = 'true' where sender_id = $1 and mail_num = $2 and id = $3;"]
+        params = [[sender_id, mail_num, id]]
+        output = await execute(queries,params)
+    } catch (error) {
+        return [[{"status":"err_run_query"}]]
+    }
+    queries = ["select m.time, m.subject, m.content, r.is_cc, r.read, r.starred, r.trashed, r.deleted \
                 from mail as m join recipient as r using (sender_id, mail_num) \
-                where r.sender_id = $1 and r.mail_num = $2 and r.id = $3;")
-    params.push([sender_id, mail_num, id])
+                where r.sender_id = $1 and r.mail_num = $2 and r.id = $3;"]
+    params = [[sender_id, mail_num, id]]
     try {
         output = await execute(queries,params)
         return output
