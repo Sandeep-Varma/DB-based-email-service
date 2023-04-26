@@ -33,9 +33,9 @@ const MailPage = () => {
       .then(response => response.json())
       .then(
         async (response) => {
+          if (response[0][0].status === "not_logged_in") navigate("/login");
           console.log(response)
           setSelectedMail(response[1][0]);
-          setStarred(response[1][0].starred);
         }
       )
   }
@@ -79,17 +79,15 @@ const MailPage = () => {
       },
       body: JSON.stringify({
         sender_id: sender_id,
-        mail_num: mail_num,
+        mn: mail_num,
         s: starred,
         r: is_read
       })
     })
-      .then(response => response.json())
-      .then(
-        async (response) => {
-          if (response[0][0].status !== "0") setServerError(true);
-        }
-      )
+    .then(response => response.json())
+    .then(response => {
+      if (response[0][0].status === "not_logged_in") navigate("/login");
+      else if (response[0][0].status !== "0") { setServerError(true); console.log(response)} })
   }
 
   if (!done) return (
@@ -125,7 +123,8 @@ const MailPage = () => {
 
                     <div className="mark-read-unread" onClick={(e) => {
                       e.stopPropagation();
-                      modify(mail.sender_id, mail.mail_num, mail.starred, !mail.read);
+                      modify(mail.sender_id, mail.mail_num, mail.starred, !(mail.read));
+                      mail.read = !(mail.read)
                     }}>
                       {mail.read ? <FontAwesomeIcon icon={faEnvelope} /> : <FontAwesomeIcon icon={faEnvelope} />}
                       {/* <span>{mail.read ? 'Mark as unread' : 'Mark as read'}</span> */}
@@ -133,7 +132,8 @@ const MailPage = () => {
 
                     <div className={`mail-star${mail.starred ? '-starred' : ''}`} onClick={(e) => {
                       e.stopPropagation();
-                      modify(mail.sender_id, mail.receiver_id, !mail.starred, mail.read);
+                      modify(mail.sender_id, mail.mail_num, !(mail.starred), mail.read);
+                      mail.starred = !(mail.starred)
                     }}>
                       &#9733;
                     </div>
