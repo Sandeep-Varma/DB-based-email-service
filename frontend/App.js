@@ -16,7 +16,7 @@ const App = ()=>{
           <Route exact path="/login" element={<LoginUser/>}/>
           <Route exact path="/signup" element={<SignUp/>}/>
           <Route exact path="/mail/:box" element={<MailPage/>}/>
-          <Route exact path="/mail/compose/:num" element={<ComposePage/>}/>
+          <Route exact path="/mail/compose/:num/:p_id/:p_mn" element={<ComposePage/>}/>
           <Route path ="*" element={<DefaultRedirector/>}/>
         </Routes>
     </Router>

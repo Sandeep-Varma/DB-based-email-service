@@ -2,7 +2,10 @@
 
 TO DO:
 
-Navigation Bar (with compose button)
+Navigation Bar
+- compose
+- logout
+- switch account (if all other work is done)
 
 Search Bar
 

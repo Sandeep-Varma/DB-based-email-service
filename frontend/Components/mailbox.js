@@ -31,14 +31,14 @@ const MailPage = () => {
         mail_num: mail_num
       })
     })
-      .then(response => response.json())
-      .then(
-        async (response) => {
-          if (response[0][0].status === "not_logged_in") navigate("/login");
-          console.log(response)
-          setSelectedMail(response[1][0]);
-        }
-      )
+    .then(response => response.json())
+    .then(
+      async (response) => {
+        if (response[0][0].status === "not_logged_in") navigate("/login");
+        console.log(response)
+        setSelectedMail(response[1][0]);
+      }
+    )
   }
 
   const FetchParentMail = (sender_id, mail_num) => {
@@ -55,15 +55,15 @@ const MailPage = () => {
         mail_num: mail_num
       })
     })
-      .then(response => response.json())
-      .then(
-        async (response) => {
-          if (response[0][0].status === "not_logged_in") navigate("/login");
-          console.log(response)
-          // to do
-          
-        }
-      )
+    .then(response => response.json())
+    .then(
+      async (response) => {
+        if (response[0][0].status === "not_logged_in") navigate("/login");
+        console.log(response)
+        // to do
+        
+      }
+    )
   }
 
   const Deletmail = (sender_id, mail_num) => {
