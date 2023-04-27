@@ -1,5 +1,5 @@
 const { execute, executemany } = require('./Components/postgres_connect')
-const { get_mailbox, get_new_mails, get_received_mail, get_sent_mail, modify, get_draft, delete_draft, send_mail } = require('./Components/mails')
+const { get_mailbox, get_new_mails, get_mail, modify, get_draft, delete_draft, send_mail } = require('./Components/mails')
 
 const port = 4000
 
@@ -78,7 +78,7 @@ app.post('/signup',
         id = req.body.user_id
         pwd = req.body.password
         full_name = req.body.name
-        execute(["SELECT * FROM mail_user where id = $1"],[[id]])
+        PG.execute(["SELECT * FROM mail_user where id = $1"],[[id]])
         .then(output => {
             if (output[1].length == 0) {
                 if (output[0][0].status == "0"){
@@ -88,7 +88,7 @@ app.post('/signup',
                                 res.send([{"status":"err_password_hash_error"}])
                             }
                             else {
-                                execute(["insert into mail_user values ($1,$2,$3)"],[[id,hashed_pwd,full_name]])
+                                PG.execute(["insert into mail_user values ($1,$2,$3)"],[[id,hashed_pwd,full_name]])
                                 .then(result => {
                                     req.session.user_id = id
                                     req.session.save()
@@ -135,34 +135,39 @@ app.get('/mail/:box',
     }
 )
 
-app.post('/get_mail/:box',
+app.post('/get_mail',
     async (req,res)=>{
         id = req.session.user_id
         box = req.params.box
         if (id){
-            if (box == "inbox" || box == "starred"){
-                sender_id = req.body.sender_id
-                mail_num = req.body.mail_num
-                get_received_mail(id,sender_id,mail_num)
-                .then(output => {
-                    res.send(output)
-                })
-                .catch(err => {
-                    res.send([[{"status":"err_fetching_mail"}]])
-                })
-            }
-            else if (box == "sent" || box == "drafts" || box == "scheduled"){
-                mail_num = req.body.mail_num
-                get_sent_mail(id,mail_num)
-                .then(output => {
-                    res.send(output)
-                })
-                .catch(err => {
-                    res.send([[{"status":"err_fetching_mail"}]])
-                })
-            }
-            // else if (box == "trash"){}
-            else res.send([[{"status":"err_invalid_box"}]])
+            sender_id = req.body.sender_id
+            mail_num = req.body.mail_num
+            get_mail(id,sender_id,mail_num)
+            .then(output => {
+                res.send(output)
+            })
+            .catch(err => {
+                res.send([[{"status":"err_fetching_mail"}]])
+            })
+        }
+        else res.send([[{ "status":"not_logged_in"}]])
+    }
+)
+
+app.post('/get_parent_mail',
+    async (req,res)=>{
+        id = req.session.user_id
+        box = req.params.box
+        if (id){
+            sender_id = req.body.sender_id
+            mail_num = req.body.mail_num
+            get_parent_mail(sender_id,mail_num)
+            .then(output => {
+                res.send(output)
+            })
+            .catch(err => {
+                res.send([[{"status":"err_fetching_mail"}]])
+            })
         }
         else res.send([[{ "status":"not_logged_in"}]])
     }
@@ -195,7 +200,7 @@ app.post('/check_ids/',
         for (i in ids_list){
             params.push([ids_list[i]])
         }
-        executemany("SELECT * FROM mail_user where id = $1",params)
+        PG.executemany("SELECT * FROM mail_user where id = $1",params)
         .then(output => {
             if (output[0][0].status == "0"){
                 for (i=1;i<output.length;i++){
@@ -256,7 +261,7 @@ app.post('/modify',
     async (req,res)=>{
         id = req.session.user_id
         if (id){
-            modify(id, req.body.sender_id, req.body.mn, req.body.s, req.body.r)
+            modify(id, req.body.sender_id, req.body.mn, req.body.mod)
             .then(output => {
                 console.log("Modified")
                 res.send(output)

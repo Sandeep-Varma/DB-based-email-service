@@ -29,7 +29,6 @@ create table mail(
     time timestamptz not null,
     subject varchar(200),
     content varchar(1000), ---------------------------- or text?
-    --------------------------------------------------- another attribute for number of attachments?
     is_draft boolean not null default false,
     starred boolean not null default false,
     trashed boolean not null default false,
