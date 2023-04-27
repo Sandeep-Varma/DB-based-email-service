@@ -182,7 +182,7 @@ app.get('/compose/:num/:p_id/:p_mn',
         if (id){
             console.log("Composing mail",num,p_id,p_mn)
             if (num === "0"){
-                get_new_reply(p_id,p_mn)
+                get_new_reply(id,p_id,p_mn)
                 .then(output => {
                     res.send(output)
                 })

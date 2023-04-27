@@ -171,12 +171,12 @@ async function get_draft(id, mail_num) {
     }
 }
 
-async function get_new_reply(p_id, p_mn) {
+async function get_new_reply(id, p_id, p_mn) {
     if (p_mn !== "0"){
         queries = ["SELECT * from mail where sender_id = $1 and mail_num = $2;"]
         params = [[p_id, p_mn]]
-        queries.push("SELECT id from recipient where sender_id = $1 and mail_num = $2;")
-        params.push([p_id, p_mn])
+        queries.push("SELECT id from recipient where sender_id = $1 and mail_num = $2 and id != $3 and id != $4;")
+        params.push([p_id, p_mn, id, p_id])
     }
     try {
         output = await execute(queries,params)
