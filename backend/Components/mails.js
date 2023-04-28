@@ -78,7 +78,7 @@ async function get_mail (id, sender_id, mail_num) {
         } catch (error) {
             return [[{"status":"err_run_query"}]]
         }
-        queries = ["select m.time, m.subject, m.content, r.is_cc, r.read, r.starred, r.trashed, r.deleted \
+        queries = ["select m.sender_id, m.mail_num, m.time, m.subject, m.content, r.is_cc, r.read, r.starred, r.trashed, r.deleted \
                     from mail as m join recipient as r using (sender_id, mail_num) \
                     where r.sender_id = $1 and r.mail_num = $2 and r.id = $3;"]
         params = [[sender_id, mail_num, id]]

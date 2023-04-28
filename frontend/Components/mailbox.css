@@ -19,15 +19,25 @@
   font-size: 26px; /* Adjust the font size as needed */
   padding-bottom: 30px;
 }
+.navigation li a {
+  text-decoration: none; /* Remove underline */
+}
+
+.navigation li.active {
+  /* background-color: #f0f0f0; Set the background color for the active page */
+  font-weight: bold; /* Apply a different font weight or any other styles */
+  /* Add any additional styles to highlight the active page */
+}
 
 .mail-page-container {
   display: flex;
   height: calc(100vh);
-  margin-left: 175px;
+  margin-left: 165px;
+  /* padding : 20px; */
 }
 
 .mail-list-container {
-  width: 30%;
+  width: 35%;
   /* background-color: #f2f2f2; */
   background-color: #eba0a0;
   /* height: calc(100vh); */

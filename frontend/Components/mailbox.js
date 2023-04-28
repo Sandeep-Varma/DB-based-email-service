@@ -15,6 +15,15 @@ const MailPage = () => {
   const [done, setDone] = useState(false);
   const [data, setData] = useState([]);
   const [selectedMail, setSelectedMail] = useState(null);
+  const inbox = box === 'inbox';
+  // console.log(inbox)
+  const sent = box === 'sent';
+  const scheduled = box === 'scheduled';
+  const starred = box === 'starred';
+  const draft = box === 'drafts';
+  const trash = box === 'trash';
+
+
 
 
   const FetchMail = (sender_id, mail_num) => {
@@ -108,7 +117,7 @@ const MailPage = () => {
         'Accept': 'application/json'
       },
       body: JSON.stringify({
-        sender_id: sender_id,
+        s_id: sender_id,
         mn: mail_num,
         mod: modifications
       })
@@ -145,18 +154,19 @@ const MailPage = () => {
       <nav class="navigation">
         {/* Navigation items */}
         <ul>
-          <li><a href="/mail/inbox">INBOX</a></li>
-          <li><a href = "/mail/starred">STARRED</a></li>
-          <li><a href="/mail/sent">SENT</a></li>
-          <li><a href = "/mail/drafts">DRAFTS</a></li>
-          <li><a href="/mail/scheduled">SCHEDULED</a></li>
-          <li><a href = "/mail/trash">TRASH</a></li>
+          <li className><a href="/mail/compose/0/0/0">COMPOSE</a></li>
+          <li className={box === 'inbox' ? 'active' : ''}><a href="/mail/inbox">INBOX</a></li>
+          <li className={box === 'starred' ? 'active' : ''}><a href="/mail/starred">STARRED</a></li>
+          <li className={box === 'sent' ? 'active' : ''}><a href="/mail/sent">SENT</a></li>
+          <li className={box === 'drafts' ? 'active' : ''}><a href="/mail/drafts">DRAFTS</a></li>
+          <li className={box === 'scheduled' ? 'active' : ''}><a href="/mail/scheduled">SCHEDULED</a></li>
+          <li className={box === 'trash' ? 'active' : ''}><a href="/mail/trash">TRASH</a></li>
         </ul>
       </nav>
       <div className="mail-page-container">
         <div className="mail-list-container">
           <div className="mail-list-box">
-            <h3>Mailbox</h3>
+            <h3>{box}</h3>
             <ul className="mail-list">
               {data.map((mail) => (
                 <li key={mail.id}>
@@ -164,14 +174,15 @@ const MailPage = () => {
                     <div className={`mail-status${mail.read ? '-read' : ''}`}>{mail.sender_id} {mail.subject}</div>
                     <div className={`mail-status${mail.read ? '-read' : ''}`}>{mail.time} {mail.read}</div>
 
-                    <div className="mark-read-unread" onClick={(e) => {
+                    {(inbox || starred )&&(<div className="mark-read-unread" onClick={(e) => {
                       e.stopPropagation();
                       modify(mail.sender_id, mail.mail_num, { r: !(mail.read) });
                       mail.read = !(mail.read)
                     }}>
                       {mail.read ? <FontAwesomeIcon icon={faEnvelope} /> : <FontAwesomeIcon icon={faEnvelopeOpen} />}
                       {/* <span>{mail.read ? 'Mark as unread' : 'Mark as read'}</span> */}
-                    </div>
+                    </div>)}
+
 
                     <div className={`mail-star${mail.starred ? '-starred' : ''}`} onClick={(e) => {
                       e.stopPropagation();
@@ -193,12 +204,31 @@ const MailPage = () => {
           {/* Right box for displaying selected email */}
           {selectedMail && (
             <div className="mail-display">
-              <div className="delete-button" onClick={() => Deletmail(selectedMail.sender_id, selectedMail.mail_num)}>
-                Delete Mail
-              </div>
+              {!trash && <div className="move-to-trash-button" onClick={() => { modify(selectedMail.sender_id, selectedMail.mail_num, { t: true }); navigate('/mail/' + box) }}>
+                Move to trash
+              </div>}
+              {inbox && (<div className="reply-button" onClick={() => navigate("/mail/compose/" + selectedMail.sender_id + "/" + selectedMail.mail_num + "/0")}>
+                Reply
+              </div>)}
+
+              {
+                scheduled && (<div className="move-to-drafts" onClick={() => navigate("/mail/compose/" + selectedMail.mail_num + "/0/0")}>
+                  Move to drafts
+                </div>
+                )}
+
+              {
+                draft && (<div className="edit-draft" onClick={() => navigate("/mail/compose/"  + selectedMail.mail_num + "/0/0")}>
+                  SEND OR EDIT DRAFT
+                </div>)
+              }
+
               <div>
                 <h2>{selectedMail.subject}</h2>
                 <p>Sent at: {selectedMail.time}</p>
+                <p>sender_id: {selectedMail.sender_id}</p>
+                <p>mail_num: {selectedMail.mail_num}</p>
+                <p>Subject: {selectedMail.subject}</p>
                 <p>Content:{selectedMail.content}</p>
                 <p>{selectedMail.body}</p>
               </div>
