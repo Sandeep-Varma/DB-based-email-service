@@ -12,7 +12,7 @@ function SignUp() {
     const [server_error, setServerError] = useState(false);
     // const [isSignUpSuccessful, setIsSignUpSuccessful] = useState(false);
     
-   
+    
     function call_post(e) {
         e.preventDefault();
         // if(password !== confirm_password) {
@@ -61,7 +61,10 @@ function SignUp() {
             alert("Please enter a user ID and same password and confirm password");
         }
     }
-    
+    function handleClick() {
+        navigate("/login");
+      }
+
     // function handleNavigateHome() {
     //     navigate("/home");
     // }
@@ -114,6 +117,7 @@ function SignUp() {
                     <p style={{color: "green"}}>Sign up successful!</p>
                     <button onClick={handleNavigateHome}> Go to Home </button>
                     </div>} */}
+                <button onClick={handleClick} >Login</button>
             </form>
         </div>
     );
