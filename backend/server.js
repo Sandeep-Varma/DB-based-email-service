@@ -1,5 +1,5 @@
 const { execute, executemany } = require('./Components/postgres_connect')
-const { get_mailbox, get_new_mails, get_mail, modify, get_draft, delete_draft, send_mail } = require('./Components/mails')
+const { get_mailbox, get_new_mails, get_mail, modify, get_draft, get_new_reply, delete_draft, send_mail } = require('./Components/mails')
 
 const port = 4000
 
@@ -78,7 +78,7 @@ app.post('/signup',
         id = req.body.user_id
         pwd = req.body.password
         full_name = req.body.name
-        PG.execute(["SELECT * FROM mail_user where id = $1"],[[id]])
+        execute(["SELECT * FROM mail_user where id = $1"],[[id]])
         .then(output => {
             if (output[1].length == 0) {
                 if (output[0][0].status == "0"){
@@ -88,7 +88,7 @@ app.post('/signup',
                                 res.send([{"status":"err_password_hash_error"}])
                             }
                             else {
-                                PG.execute(["insert into mail_user values ($1,$2,$3)"],[[id,hashed_pwd,full_name]])
+                                execute(["insert into mail_user values ($1,$2,$3)"],[[id,hashed_pwd,full_name]])
                                 .then(result => {
                                     req.session.user_id = id
                                     req.session.save()
@@ -173,12 +173,23 @@ app.post('/get_parent_mail',
     }
 )
 
-app.get('/compose/:num',
+app.get('/compose/:num/:p_id/:p_mn',
     async (req,res)=>{
         id = req.session.user_id
         num = req.params.num
+        p_id = req.params.p_id
+        p_mn = req.params.p_mn
         if (id){
-            if (num == "0") res.send([[{"status":"0"}]])
+            console.log("Composing mail",num,p_id,p_mn)
+            if (num === "0"){
+                get_new_reply(id,p_id,p_mn)
+                .then(output => {
+                    res.send(output)
+                })
+                .catch(err => {
+                    res.send([[{"status":"err_fetching_new_reply"}]])
+                })
+            }
             else{
                 get_draft(id,num)
                 .then(output => {
@@ -200,7 +211,7 @@ app.post('/check_ids/',
         for (i in ids_list){
             params.push([ids_list[i]])
         }
-        PG.executemany("SELECT * FROM mail_user where id = $1",params)
+        executemany("SELECT * FROM mail_user where id = $1",params)
         .then(output => {
             if (output[0][0].status == "0"){
                 for (i=1;i<output.length;i++){
@@ -228,6 +239,8 @@ app.post('/send_mail/:num',
         is_draft = req.body.is_draft
         is_scheduled = req.body.is_scheduled
         send_time = req.body.send_time
+        p_id = req.body.p_id
+        p_mn = req.body.p_mn
         if (id){
             if (num != 0){
                 delete_draft(id,num)
@@ -239,7 +252,7 @@ app.post('/send_mail/:num',
                     res.send([[{"status":"err_editing_draft"}]])
                 })
             }
-            send_mail(id,subject,content,to_recipients,cc_recipients,is_draft,is_scheduled,send_time)
+            send_mail(id,subject,content,to_recipients,cc_recipients,is_draft,is_scheduled,send_time,p_id,p_mn)
             .then(output => {
                 console.log("mail sent")
                 res.send(output)

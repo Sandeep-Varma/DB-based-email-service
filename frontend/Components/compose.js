@@ -3,9 +3,10 @@ import { useNavigate, useParams } from "react-router-dom";
 
 const ComposePage = ()=>{
     const navigate = useNavigate();
-    const { num } = useParams();
+    const { num, p_id, p_mn } = useParams();
     const [server_error, setServerError] = useState(false);
     const [draft_not_found, setDraftNotFound] = useState(false);
+    const [parent_not_found, setParentNotFound] = useState(false);
     const [logged_in, setLoggedIn] = useState(false);
     const [done, setDone] = useState(false);
     
@@ -17,6 +18,8 @@ const ComposePage = ()=>{
     const [date, setDate] = useState("");
     const [time, setTime] = useState("");
     const [scheduled, setIsScheduled] = useState(false);
+    const [pid, setPid] = useState(p_id);
+    const [pmn, setPmn] = useState(p_mn);
     const [dt_filled, setDtFilled] = useState(true);
     const [not_found_ID, setNotFoundID] = useState("0");
 
@@ -75,7 +78,9 @@ const ComposePage = ()=>{
                             content: content,
                             is_draft: draft,
                             is_scheduled: scheduled,
-                            send_time: date+" "+time
+                            send_time: date+" "+time,
+                            p_id: pid,
+                            p_mn: pmn
                         })
                     })
                     .then(response=>response.json())
@@ -99,7 +104,7 @@ const ComposePage = ()=>{
     
     useEffect(()=>{
         const f=async()=>{
-            fetch('http://localhost:4000/compose/'+num, {
+            fetch('http://localhost:4000/compose/'+num+'/'+pid+'/'+pmn, {
                 method: 'GET',
                 mode: 'cors',
                 credentials: 'include',
@@ -124,6 +129,26 @@ const ComposePage = ()=>{
                                 temp = ""
                                 for (let i=0; i<response[3].length-1; i++) temp = temp.concat(response[3][i].id,", ")
                                 if (response[3].length > 0) temp = temp.concat(response[3][response[3].length-1].id)
+                                setCcString(temp)
+                                if (response[4].length === 0) {
+                                    setPid(0);
+                                    setPmn(0);
+                                }
+                                else {
+                                    setPid(response[4][0].p_id)
+                                    setPmn(response[4][0].p_mail_num)
+                                }
+                            }
+                        }
+                        else if (pmn !== "0"){
+                            if (response[1].length === 0) setParentNotFound(true)
+                            else{
+                                console.log(response)
+                                setSubject("Re: "+response[1][0].subject)
+                                setToString(response[1][0].sender_id)
+                                let temp = ""
+                                for (let i=0; i<response[2].length-1; i++) temp = temp.concat(response[2][i].id,", ")
+                                if (response[2].length > 0) temp = temp.concat(response[2][response[2].length-1].id)
                                 setCcString(temp)
                             }
                         }
@@ -156,6 +181,11 @@ const ComposePage = ()=>{
     else if (draft_not_found) return (
         <div>
             <h1>Draft not found</h1>
+        </div>
+    )
+    else if (parent_not_found) return (
+        <div>
+            <h1>Parent mail not found</h1>
         </div>
     )
     else return (

@@ -2,7 +2,10 @@
 
 TO DO:
 
-Navigation Bar (with compose button)
+Navigation Bar
+- compose
+- logout
+- switch account (if all other work is done)
 
 Search Bar
 
@@ -30,3 +33,4 @@ use "on delete cascade" for simpler update queries
 show time on mails
 
 fetch new mails once every minute
+-- add an argument - box to get_new_mails function

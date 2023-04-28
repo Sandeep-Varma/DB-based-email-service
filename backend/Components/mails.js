@@ -160,6 +160,24 @@ async function get_draft(id, mail_num) {
     params.push([id, mail_num])
     queries.push("SELECT id from recipient where sender_id = $1 and mail_num = $2 and is_cc is true;")
     params.push([id, mail_num])
+    queries.push("SELECT p_id, p_mail_num from reply where (id, mail_num) = ($1, $2);")
+    params.push([id, mail_num])
+    try {
+        output = await execute(queries,params)
+        return output
+    }
+    catch (error) {
+        return [[{"status":"err_run_query"}]]
+    }
+}
+
+async function get_new_reply(id, p_id, p_mn) {
+    if (p_mn !== "0"){
+        queries = ["SELECT * from mail where sender_id = $1 and mail_num = $2;"]
+        params = [[p_id, p_mn]]
+        queries.push("SELECT id from recipient where sender_id = $1 and mail_num = $2 and id != $3 and id != $4;")
+        params.push([p_id, p_mn, id, p_id])
+    }
     try {
         output = await execute(queries,params)
         return output
@@ -181,7 +199,7 @@ async function delete_draft(id, mail_num) {
     }
 }
 
-async function send_mail (id, subject, content, to_recipients, cc_recipients, is_draft, is_scheduled, send_time) {
+async function send_mail (id, subject, content, to_recipients, cc_recipients, is_draft, is_scheduled, send_time, p_id, p_mn) {
     if (is_scheduled) {
         queries = ["INSERT into mail values ($1, 1+(select num_mails from mail_user where id=$2), $3, $4, $5, $6, $7, $8);"]
         params = [[id, id, send_time, subject, content, is_draft, false, false]]
@@ -189,6 +207,10 @@ async function send_mail (id, subject, content, to_recipients, cc_recipients, is
     else {
         queries = ["INSERT into mail values ($1, 1+(select num_mails from mail_user where id=$2), (select now from now()), $3, $4, $5, $6, $7);"]
         params = [[id, id, subject, content, is_draft, false, false]]
+    }
+    if (p_mn > 0) {
+        queries.push("INSERT into reply values ($1, 1+(select num_mails from mail_user where id=$2), $3, $4);")
+        params.push([id, id, p_id, p_mn])
     }
     queries.push("UPDATE mail_user set num_mails = 1+(select num_mails from mail_user where id=$1) where id=$1;")
     params.push([id])
@@ -215,6 +237,7 @@ module.exports = {
     get_parent_mail,
     modify,
     get_draft,
+    get_new_reply,
     delete_draft,
     send_mail
 }

@@ -69,7 +69,7 @@ create table reply(
     p_id varchar(25) not null,
     p_mail_num int not null,
     primary key(id, mail_num),
-    foreign key(id, mail_num) references mail(sender_id, mail_num),
+    foreign key(id, mail_num) references mail(sender_id, mail_num) on delete cascade,
     foreign key(p_id, p_mail_num) references mail(sender_id, mail_num)
 );
 
