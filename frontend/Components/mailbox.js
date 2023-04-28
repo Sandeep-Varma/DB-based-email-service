@@ -31,14 +31,14 @@ const MailPage = () => {
         mail_num: mail_num
       })
     })
-    .then(response => response.json())
-    .then(
-      async (response) => {
-        if (response[0][0].status === "not_logged_in") navigate("/login");
-        console.log(response)
-        setSelectedMail(response[1][0]);
-      }
-    )
+      .then(response => response.json())
+      .then(
+        async (response) => {
+          if (response[0][0].status === "not_logged_in") navigate("/login");
+          console.log(response)
+          setSelectedMail(response[1][0]);
+        }
+      )
   }
 
   const FetchParentMail = (sender_id, mail_num) => {
@@ -55,15 +55,15 @@ const MailPage = () => {
         mail_num: mail_num
       })
     })
-    .then(response => response.json())
-    .then(
-      async (response) => {
-        if (response[0][0].status === "not_logged_in") navigate("/login");
-        console.log(response)
-        // to do
-        
-      }
-    )
+      .then(response => response.json())
+      .then(
+        async (response) => {
+          if (response[0][0].status === "not_logged_in") navigate("/login");
+          console.log(response)
+          // to do
+
+        }
+      )
   }
 
   const Deletmail = (sender_id, mail_num) => {
@@ -113,11 +113,11 @@ const MailPage = () => {
         mod: modifications
       })
     })
-    .then(response => response.json())
-    .then(response => {
-      if (response[0][0].status === "not_logged_in") navigate("/login");
-      else if (response[0][0].status !== "0") { setServerError(true); console.log(response) }
-    })
+      .then(response => response.json())
+      .then(response => {
+        if (response[0][0].status === "not_logged_in") navigate("/login");
+        else if (response[0][0].status !== "0") { setServerError(true); console.log(response) }
+      })
   }
 
   if (!done) return (
@@ -138,10 +138,23 @@ const MailPage = () => {
     )
   }
   else return (
+
+
+
     <div>
+      <nav class="navigation">
+        {/* Navigation items */}
+        <ul>
+          <li><a href="/mail/inbox">INBOX</a></li>
+          <li><a href = "/mail/starred">STARRED</a></li>
+          <li><a href="/mail/sent">SENT</a></li>
+          <li><a href = "/mail/drafts">DRAFTS</a></li>
+          <li><a href="/mail/scheduled">SCHEDULED</a></li>
+          <li><a href = "/mail/trash">TRASH</a></li>
+        </ul>
+      </nav>
       <div className="mail-page-container">
         <div className="mail-list-container">
-          {/* Left box for email list */}
           <div className="mail-list-box">
             <h3>Mailbox</h3>
             <ul className="mail-list">
@@ -153,7 +166,7 @@ const MailPage = () => {
 
                     <div className="mark-read-unread" onClick={(e) => {
                       e.stopPropagation();
-                      modify(mail.sender_id, mail.mail_num, {r:!(mail.read)});
+                      modify(mail.sender_id, mail.mail_num, { r: !(mail.read) });
                       mail.read = !(mail.read)
                     }}>
                       {mail.read ? <FontAwesomeIcon icon={faEnvelope} /> : <FontAwesomeIcon icon={faEnvelopeOpen} />}
@@ -162,7 +175,7 @@ const MailPage = () => {
 
                     <div className={`mail-star${mail.starred ? '-starred' : ''}`} onClick={(e) => {
                       e.stopPropagation();
-                      modify(mail.sender_id, mail.mail_num, {s:!(mail.starred)});
+                      modify(mail.sender_id, mail.mail_num, { s: !(mail.starred) });
                       mail.starred = !(mail.starred)
                     }}>
                       &#9733;
@@ -182,14 +195,14 @@ const MailPage = () => {
             <div className="mail-display">
               <div className="delete-button" onClick={() => Deletmail(selectedMail.sender_id, selectedMail.mail_num)}>
                 Delete Mail
-                </div>
+              </div>
               <div>
                 <h2>{selectedMail.subject}</h2>
                 <p>Sent at: {selectedMail.time}</p>
                 <p>Content:{selectedMail.content}</p>
                 <p>{selectedMail.body}</p>
               </div>
-              
+
             </div>
           )}
         </div>

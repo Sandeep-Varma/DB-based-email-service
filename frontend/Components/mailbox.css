@@ -1,12 +1,36 @@
+.navigation {
+  position: fixed;
+  width: 130px; /* Adjust the width as needed */
+  height: calc(77vh); /* Set the navigation height to cover the full viewport */
+  background-color: #b382f7; /* Set the background color as desired */
+  padding: 20px;
+  float: left; /* Float the navigation to the left */
+  padding-top: 200px;
+}
+
+.navigation  ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.navigation  li {
+  margin-bottom: 10px;
+  font-size: 26px; /* Adjust the font size as needed */
+  padding-bottom: 30px;
+}
+
 .mail-page-container {
   display: flex;
   height: calc(100vh);
+  margin-left: 175px;
 }
 
 .mail-list-container {
   width: 30%;
   /* background-color: #f2f2f2; */
   background-color: #eba0a0;
+  /* height: calc(100vh); */
 
   overflow-y: scroll;
 }
