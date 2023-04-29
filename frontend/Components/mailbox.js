@@ -16,14 +16,8 @@ const MailPage = () => {
   const [sData, setSData] = useState([]);
   const [data, setData] = useState([]);
   const [selectedMailThread, setSelectedMailThread] = useState([]);
-  const [c,setC] = useState(true)
-  const [sc,setSc] = useState(true)
-  const inbox = box === 'inbox';
-  const sent = box === 'sent';
-  const scheduled = box === 'scheduled';
-  const starred = box === 'starred';
-  const draft = box === 'drafts';
-  const trash = box === 'trash';
+  const [c,setC] = useState(false)
+  // const [sc,setSc] = useState(true)
   const [tl, setTl] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -41,39 +35,45 @@ const MailPage = () => {
         <div style={{ marginBottom: "70px" }}></div>
       </div>
     )
-
   };
 
   const handleLogout = ()=>{
-    fetch('http://localhost:4000/logout' , {
-        method: 'GET',
-        mode: 'cors',
-        credentials: 'include',
-      }).then(navigate('/login'))
-     
+    fetch('http://localhost:4000/logout',{
+      method: 'GET',
+      mode: 'cors',
+      credentials: 'include',
+    })
+    .then(navigate('/login'))
   }
 
   const change_star = (index) => {
-    var temp = data;
-    console.log(temp[index].starred)
+    console.log("changing star")
+    let temp = data;
+    // if (temp[0].hasOwnProperty('x')) for (let i = 0; i < temp.length; i++) delete temp[i].x;
+    // else for (let i = 0; i < temp.length; i++) temp[i].x = 'x';
+    // console.log(temp[index].starred)
     temp[index].starred = !(temp[index].starred);
-    console.log(temp[index].starred)
+    // console.log(temp[index].starred)
+    setData(temp);
     setC(!c)
   }
 
   const change_read = (index) => {
-    console.log("change_read")
-    var temp = data;
-    console.log(temp[index].starred)
+    console.log("changing read")
+    let temp = data;
+    // if (temp[0].hasOwnProperty('x')) for (let i = 0; i < temp.length; i++) delete temp[i].x;
+    // else for (let i = 0; i < temp.length; i++) temp[i].x = 'x';
+    // console.log(temp[index].read)
     temp[index].read = !(temp[index].read);
-    // setData(temp);
+    // console.log(temp[index].read)
+    setData(temp);
     setC(!c)
-    setSc(!sc)
+    // setSc(!sc)
     // console.log("hi")
   }
 
   const FetchMail = (sender_id, mail_num) => {
-    fetch('http://localhost:4000/get_mail', {
+    fetch('http://localhost:4000/get_mail/'+box, {
       method: 'POST',
       mode: 'cors',
       credentials: 'include',
@@ -86,25 +86,24 @@ const MailPage = () => {
         mail_num: mail_num
       })
     })
-      .then(response => response.json())
-      .then(
-        async (response) => {
-          if (response[0][0].status === "not_logged_in") navigate("/login");
-          setSelectedMailThread([response[1][0]]);
-        }
-      )
+    .then(response => response.json())
+    .then(
+      async (response) => {
+        if (response[0][0].status === "not_logged_in") navigate("/login");
+        setSelectedMailThread([response[1][0]]);
+      }
+    )
   }
 
   useEffect(() => {
     console.log("selectedMailthread", selectedMailThread)
     console.log("tl", tl)
-    if (tl != selectedMailThread.length) {
+    if (tl !== selectedMailThread.length) {
       setTl(selectedMailThread.length);
     }
   }, [selectedMailThread])
 
   useEffect(() => {
-
     if (tl > 0) {
       console.log(selectedMailThread[0])
       fetch('http://localhost:4000/get_parent_mail', {
@@ -120,44 +119,34 @@ const MailPage = () => {
           mail_num: selectedMailThread[selectedMailThread.length - 1].mail_num
         })
       })
-        .then(response => response.json())
-        .then(
-          async (response) => {
-            if (response[0][0].status === "not_logged_in") navigate("/login");
-            console.log(response)
-            if (response[1].length != 0) {
-              setSelectedMailThread(selectedMailThread.concat([response[1][0]]))
-              console.log(selectedMailThread)
-              // return true;
-            }
-
-
+      .then(response => response.json())
+      .then(
+        async (response) => {
+          if (response[0][0].status === "not_logged_in") navigate("/login");
+          console.log(response)
+          if (response[1].length !== 0) {
+            setSelectedMailThread(selectedMailThread.concat([response[1][0]]))
+            console.log(selectedMailThread)
+            // return true;
           }
-        )
+        }
+      )
     }
   }, [tl])
 
 
-  const Deletmail = (sender_id, mail_num) => {
-    console.log("delete called")
-  }
-
-
-
-
-
   useEffect(() => {
-    console.log("dskhgjhsjkgbjkdsbyyyyyyy")
-    if (searchQuery != '') {
+    console.log("Changing sData")
+    if (searchQuery !== '') {
       setSData(data.filter((mail) => {
         return mail.sender_id.toLowerCase().includes(searchQuery.toLowerCase()) || mail.subject.toLowerCase().includes(searchQuery.toLowerCase())
       }))
-    } else {
-      console.log("heyyyyyyyyyyyyyy")
-      setSData([])
+    }
+    else {
+      console.log("No search string")
       setSData(data)
     }
-  }, [searchQuery, c])
+  }, [searchQuery, data, c])
 
   useEffect(() => {
     const f = async () => {
@@ -166,35 +155,33 @@ const MailPage = () => {
         mode: 'cors',
         credentials: 'include',
       })
-        .then(response => response.json())
-        .then(
-          async (response) => {
-            console.log(response)
-            if (response[0][0].status === "not_logged_in") navigate("/login");
-            else setLoggedIn(true);
-            if (response[0][0].status.startsWith("err_")) setServerError(true);
-            else if (response[0][0].status === "invalid_box") navigate("/mail/inbox");
-            else {
-
-            }
-            setDone(true)
-            var temp = response[2];
-            // iterate through response[2] and add a new key "index" to each mail object
+      .then(response => response.json())
+      .then(
+        async (response) => {
+          if (response[0][0].status === "not_logged_in") navigate("/login");
+          else setLoggedIn(true);
+          if (response[0][0].status.startsWith("err_")) setServerError(true);
+          else if (response[0][0].status === "invalid_box") navigate("/mail/inbox");
+          else {
+            let temp = response[2];
             for (let i = 0; i < temp.length; i++) {
               temp[i].index = i;
             }
             setData(temp);
             setSData(temp);
-            console.log(temp)
+            setSearchQuery('');
+            setSelectedMailThread([]);
           }
-        )
-        .catch((error) => { console.log(error); });
+          setDone(true)
+        }
+      )
+      .catch((error) => { console.log(error); });
     }
     f();
   }, [navigate, box]);
 
   const modify = (sender_id, mail_num, modifications) => {
-    console.log("modify called, starred: " + modifications)
+    console.log("modify called:",modifications)
     fetch('http://localhost:4000/modify', {
       method: 'POST',
       mode: 'cors',
@@ -209,13 +196,13 @@ const MailPage = () => {
         mod: modifications
       })
     })
-      .then(response => response.json())
-      .then(response => {
-        if (response[0][0].status === "not_logged_in") navigate("/login");
-        else if (response[0][0].status !== "0") { setServerError(true); console.log(response) }
-      })
+    .then(response => response.json())
+    .then(response => {
+      if (response[0][0].status === "not_logged_in") navigate("/login");
+      else if (response[0][0].status !== "0") { setServerError(true); console.log(response) }
+    })
   }
-
+  
   if (!done) return (
     <div>
       <h1>Loading ...</h1>
@@ -234,9 +221,6 @@ const MailPage = () => {
     )
   }
   else return (
-
-
-
     <div>
       <nav class="navigation">
         {/* Navigation items */}
@@ -258,20 +242,20 @@ const MailPage = () => {
             <ul className="mail-list">
               <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search by subject or sender ID" />
 
-              {(sc || !sc ) && sData.map((mail) => (
+              {sData.map((mail) => (
                 <li key={mail.id}>
                   <div className="mail-item" onClick={() => {
                     FetchMail(mail.sender_id, mail.mail_num);
                   }
                   }>
-                    <div className={`mail-status${mail.read ? '-read' : ''}`}>{mail.sender_id} {mail.subject}</div>
-                    <div className={`mail-status${mail.read ? '-read' : ''}`}>{mail.time} {mail.read}</div>
+                    <div className={`mail-status${mail.read === false ? '' : '-read'}`}>{mail.sender_id} {mail.subject}</div>
+                    <div className={`mail-status${mail.read === false ? '' : '-read'}`}>{mail.time} {mail.read}</div>
 
-                    {(inbox || starred) && (<div className="mark-read-unread" onClick={(e) => {
+                    {(box === 'inbox' || box === 'starred' || box === 'trashed') && (<div className="mark-read-unread" onClick={(e) => {
                       e.stopPropagation();
                       modify(mail.sender_id, mail.mail_num, { r: !(mail.read) });
                       change_read(mail.index)
-                      mail.read = !(mail.read)
+                      // mail.read = !(mail.read)
                     }}>
                       {mail.read ? <FontAwesomeIcon icon={faEnvelopeOpen} /> : <FontAwesomeIcon icon={faEnvelope} />}
                       {/* <span>{mail.read ? 'Mark as unread' : 'Mark as read'}</span> */}
@@ -280,15 +264,8 @@ const MailPage = () => {
 
                     <div className={`mail-star${mail.starred ? '-starred' : ''}`} onClick={(e) => {
                       e.stopPropagation();
-                      // modify(mail.sender_id, mail.mail_num, { s: !(mail.starred) });
+                      modify(mail.sender_id, mail.mail_num, (box === 'inbox' || box === 'starred' || box === 'trashed')?{s:!(mail.starred)}:{ss:!(mail.starred)});
                       change_star(mail.index)
-
-                      // var temp = data;
-                      // temp[mail.index].starred = !(temp[mail.index].starred);
-                      // setData(temp);
-                      // console.log("hi")
-
-                      // mail.starred = !(mail.starred)
                     }}>
                       &#9733;
                     </div>
@@ -305,15 +282,18 @@ const MailPage = () => {
           {/* Right box for displaying selected email */}
           {selectedMailThread[0] && (
             <div className="mail-display">
-              {!trash && <div className="move-to-trash-button" onClick={() => { modify(selectedMailThread[0].sender_id, selectedMailThread[0].mail_num, { t: true }); navigate('/mail/' + box) }}>
+              {!(box === 'trash') && <div className="move-to-trash-button" onClick={() => { modify(selectedMailThread[0].sender_id, selectedMailThread[0].mail_num, (box === 'inbox' || box === 'starred')?{ t: true }:{ st: true}); navigate('/mail/' + box) }}>
                 Move to trash
               </div>}
-              {(inbox || starred) && (<div className="reply-button" onClick={() => navigate("/mail/compose/0/" + selectedMailThread[0].sender_id + "/" + selectedMailThread[0].mail_num)}>
+              {box === 'trash' && <div className="move-to-trash-button" onClick={() => { modify(selectedMailThread[0].sender_id, selectedMailThread[0].mail_num, { d: true }); navigate('/mail/' + box) }}>
+                Delete
+              </div>}
+              {(box === 'inbox' || box === 'starred') && (<div className="reply-button" onClick={() => navigate("/mail/compose/0/" + selectedMailThread[0].sender_id + "/" + selectedMailThread[0].mail_num)}>
                 Reply
               </div>)}
 
               {
-                scheduled && (<div className="move-to-drafts" onClick={() => {
+                box === 'scheduled' && (<div className="move-to-drafts" onClick={() => {
                   modify(selectedMailThread[0].sender_id, selectedMailThread[0].mail_num, { dr: "true" });
                   navigate('/mail/inbox')
                 }
@@ -324,7 +304,7 @@ const MailPage = () => {
                 )}
 
               {
-                draft && (<div className="edit-draft" onClick={() => navigate("/mail/compose/" + selectedMailThread[0].mail_num + "/0/0")}>
+                box === 'drafts' && (<div className="edit-draft" onClick={() => navigate("/mail/compose/" + selectedMailThread[0].mail_num + "/0/0")}>
                   SEND OR EDIT DRAFT
                 </div>)
               }

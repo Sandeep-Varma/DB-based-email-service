@@ -66,7 +66,7 @@ async function get_new_mails (id, time) {
 }
 
 async function get_mail (id, sender_id, mail_num) {
-    if (id === sender_id){
+    if (box == "sent" || box == "drafts" || box == "scheduled"){
         queries = ["select * from mail where sender_id = $1 and mail_num = $2;"]
         params = [[sender_id, mail_num]]
     }
@@ -103,58 +103,42 @@ async function get_parent_mail (sender_id, mail_num) {
 }
 
 async function modify (id, sender_id, mail_num, mod){
-    if (id == sender_id){
-        queries = []
-        params = []
-        if (mod.hasOwnProperty("s")){
-            queries.push("update mail set starred = $1 where sender_id = $2 and mail_num = $3")
-            params.push([mod.s, sender_id, mail_num])
-        }
-        if (mod.hasOwnProperty("t")){
-            queries.push("update mail set trashed = $1 where sender_id = $2 and mail_num = $3")
-            params.push([mod.t, sender_id, mail_num])
-        }
-        if (mod.hasOwnProperty("d")){
-            queries.push("update mail set deleted = $1 where sender_id = $2 and mail_num = $3")
-            params.push([mod.d, sender_id, mail_num])
-        }
-        if(mod.hasOwnProperty("dr")){
-            queries.push("update mail  set is_draft = $1 where sender_id = $2 and mail_num = $3")
-            params.push([mod.dr, sender_id, mail_num])
-        }
-        try {
-            output = await execute(queries,params)
-            return output
-        } catch (error) {
-            return [[{"status":"err_run_query"}]]
-        }
+    queries = []
+    params = []
+    if (mod.hasOwnProperty("ss")){
+        queries.push("update mail set starred = $1 where sender_id = $2 and mail_num = $3")
+        params.push([mod.ss, sender_id, mail_num])
     }
-    else{
-        queries = []
-        params = []
-        if (mod.hasOwnProperty("s")){
-            console.log("modifying starred")
-            queries.push("update recipient set starred = $1 where sender_id = $2 and mail_num = $3 and id = $4")
-            params.push([mod.s, sender_id, mail_num, id])
-        }
-        if (mod.hasOwnProperty("r")){
-            queries.push("update recipient set read = $1 where sender_id = $2 and mail_num = $3 and id = $4")
-            params.push([mod.r, sender_id, mail_num, id])
-        }
-        if (mod.hasOwnProperty("t")){
-            queries.push("update recipient set trashed = $1 where sender_id = $2 and mail_num = $3 and id = $4")
-            params.push([mod.t, sender_id, mail_num, id])
-        }
-        if (mod.hasOwnProperty("d")){
-            queries.push("update recipient set deleted = $1 where sender_id = $2 and mail_num = $3 and id = $4")
-            params.push([mod.d, sender_id, mail_num, id])
-        }
-        try {
-            output = await execute(queries,params)
-            return output
-        } catch (error) {
-            return [[{"status":"err_run_query"}]]
-        }
+    if (mod.hasOwnProperty("st")){
+        queries.push("update mail set trashed = $1 where sender_id = $2 and mail_num = $3")
+        params.push([mod.st, sender_id, mail_num])
+    }
+    if(mod.hasOwnProperty("dr")){
+        queries.push("update mail  set is_draft = $1 where sender_id = $2 and mail_num = $3")
+        params.push([mod.dr, sender_id, mail_num])
+    }
+    if (mod.hasOwnProperty("s")){
+        console.log("modifying starred")
+        queries.push("update recipient set starred = $1 where sender_id = $2 and mail_num = $3 and id = $4")
+        params.push([mod.s, sender_id, mail_num, id])
+    }
+    if (mod.hasOwnProperty("r")){
+        queries.push("update recipient set read = $1 where sender_id = $2 and mail_num = $3 and id = $4")
+        params.push([mod.r, sender_id, mail_num, id])
+    }
+    if (mod.hasOwnProperty("t")){
+        queries.push("update recipient set trashed = $1 where sender_id = $2 and mail_num = $3 and id = $4")
+        params.push([mod.t, sender_id, mail_num, id])
+    }
+    if (mod.hasOwnProperty("d")){
+        queries.push("update recipient set deleted = $1 where sender_id = $2 and mail_num = $3 and id = $4")
+        params.push([mod.d, sender_id, mail_num, id])
+    }
+    try {
+        output = await execute(queries,params)
+        return output
+    } catch (error) {
+        return [[{"status":"err_run_query"}]]
     }
 }
 

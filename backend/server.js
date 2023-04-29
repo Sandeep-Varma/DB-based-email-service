@@ -135,14 +135,14 @@ app.get('/mail/:box',
     }
 )
 
-app.post('/get_mail',
+app.post('/get_mail/:box',
     async (req,res)=>{
         id = req.session.user_id
         box = req.params.box
         if (id){
             sender_id = req.body.sender_id
             mail_num = req.body.mail_num
-            get_mail(id,sender_id,mail_num)
+            get_mail(id,sender_id,mail_num,box)
             .then(output => {
                 res.send(output)
             })
