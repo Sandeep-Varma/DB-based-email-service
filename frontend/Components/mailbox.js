@@ -15,6 +15,7 @@ const MailPage = () => {
   const [done, setDone] = useState(false);
   const [data, setData] = useState([]);
   const [selectedMail, setSelectedMail] = useState(null);
+  const [selectedParentMail, setSelectedParentMail] = useState([]);
   const inbox = box === 'inbox';
   // console.log(inbox)
   const sent = box === 'sent';
@@ -70,6 +71,12 @@ const MailPage = () => {
           if (response[0][0].status === "not_logged_in") navigate("/login");
           console.log(response)
           // to do
+          //push to selectedParentMail
+          console.log("parent mail  ", response[1][0])
+          console.log("selected parent mail  ", selectedParentMail)
+          if(selectedParentMail.length === 0) setSelectedParentMail([response[1][0]]);
+          else setSelectedParentMail(prevState => [...prevState, response[1][0]]);
+          console.log(selectedParentMail)
 
         }
       )
@@ -170,7 +177,12 @@ const MailPage = () => {
             <ul className="mail-list">
               {data.map((mail) => (
                 <li key={mail.id}>
-                  <div className="mail-item" onClick={() => FetchMail(mail.sender_id, mail.mail_num)}>
+                  <div className="mail-item" onClick={() => {
+                    setSelectedParentMail([]);
+                    FetchMail(mail.sender_id, mail.mail_num);
+                    FetchParentMail(mail.sender_id, mail.mail_num);
+                  }
+                  }>
                     <div className={`mail-status${mail.read ? '-read' : ''}`}>{mail.sender_id} {mail.subject}</div>
                     <div className={`mail-status${mail.read ? '-read' : ''}`}>{mail.time} {mail.read}</div>
 
@@ -179,7 +191,7 @@ const MailPage = () => {
                       modify(mail.sender_id, mail.mail_num, { r: !(mail.read) });
                       mail.read = !(mail.read)
                     }}>
-                      {mail.read ? <FontAwesomeIcon icon={faEnvelope} /> : <FontAwesomeIcon icon={faEnvelopeOpen} />}
+                      {mail.read ? <FontAwesomeIcon icon={faEnvelopeOpen} /> : <FontAwesomeIcon icon={faEnvelope} />}
                       {/* <span>{mail.read ? 'Mark as unread' : 'Mark as read'}</span> */}
                     </div>)}
 
@@ -207,7 +219,7 @@ const MailPage = () => {
               {!trash && <div className="move-to-trash-button" onClick={() => { modify(selectedMail.sender_id, selectedMail.mail_num, { t: true }); navigate('/mail/' + box) }}>
                 Move to trash
               </div>}
-              {inbox && (<div className="reply-button" onClick={() => navigate("/mail/compose/" + selectedMail.sender_id + "/" + selectedMail.mail_num + "/0")}>
+              {inbox && (<div className="reply-button" onClick={() => navigate("/mail/compose/0/" + selectedMail.sender_id + "/" + selectedMail.mail_num )}>
                 Reply
               </div>)}
 
@@ -230,6 +242,7 @@ const MailPage = () => {
                 <p>mail_num: {selectedMail.mail_num}</p>
                 <p>Subject: {selectedMail.subject}</p>
                 <p>Content:{selectedMail.content}</p>
+                
                 <p>{selectedMail.body}</p>
               </div>
 
