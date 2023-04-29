@@ -1,5 +1,5 @@
 const { execute, executemany } = require('./Components/postgres_connect')
-const { get_mailbox, get_new_mails, get_mail, modify, get_draft, get_new_reply, delete_draft, send_mail } = require('./Components/mails')
+const { get_mailbox, get_new_mails, get_mail,get_parent_mail, modify, get_draft, get_new_reply, delete_draft, send_mail } = require('./Components/mails')
 
 const port = 4000
 
