@@ -30,8 +30,8 @@ const MailPage = () => {
     return (
       <div>
         <pre className='sender-text'>{indentedContent}</pre>
-        <pre className='subject-text'>{indentedContent1}</pre>
-        <pre className='content-text'>{indentedContent2}</pre>
+        <pre className='sender-text'>{indentedContent1}</pre>
+        <pre className='sender-text'>{indentedContent2}</pre>
         <div style={{ marginBottom: "70px" }}></div>
       </div>
     )
@@ -231,7 +231,7 @@ const MailPage = () => {
     )
   }
   else return (
-    <div>
+    <div className='outer'>
       <nav class="navigation">
         {/* Navigation items */}
         <ul>
@@ -303,6 +303,11 @@ const MailPage = () => {
                 {!(box === 'trash') && <div className="move-to-trash-button" onClick={() => { modify(selectedMailThread[0].sender_id, selectedMailThread[0].mail_num, (box === 'inbox' || box === 'starred') ? { t: true } : { st: true }); navigate(0); console.log("hi") }}>
                   Move to trash
                 </div>}
+
+                {box === 'trash' && <div className="restore-btn" onClick={() => { modify(selectedMailThread[0].sender_id, selectedMailThread[0].mail_num, { t: false }); navigate(0) }}>
+                  Restore
+                </div>}
+
                 {box === 'trash' && <div className="move-to-trash-button" onClick={() => { modify(selectedMailThread[0].sender_id, selectedMailThread[0].mail_num, { d: true }); navigate(0) }}>
                   Delete
                 </div>}
@@ -310,10 +315,7 @@ const MailPage = () => {
                   Reply
                 </div>)}
 
-                {/* this is for restoring the mail */}
-                {/* {(box === 'trash') && (<div className="reply-button" onClick={() => navigate("/mail/compose/0/" + selectedMailThread[0].sender_id + "/" + selectedMailThread[0].mail_num)}>
-                  Restore
-                </div>)} */}
+                
 
                 {
                   box === 'scheduled' && (<div className="move-to-drafts" onClick={() => {

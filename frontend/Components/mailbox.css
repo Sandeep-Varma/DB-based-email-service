@@ -1,7 +1,15 @@
+.outer{
+  /* display: flex; */
+  height: 100vh;
+  overflow-y: scroll; /* Add vertical scrollbar */
+  overflow-x: scroll;
+
+}
+
 .navigation {
-  position: fixed;
+  position: relative;
   width: 170px; /* Adjust the width as needed */
-  height: calc(100vh); /* Set the navigation height to cover the full viewport */
+  height: calc(100%); /* Set the navigation height to cover the full viewport */
   background-color: #e7e6e8; /* Set the background color as desired */
   padding: 20px;
   float: left; /* Float the navigation to the left */
@@ -43,9 +51,10 @@
 
 .navigation button{
   /* keep the button to the bottom of navigation bar */
-  position: fixed;
+  position: relative;
   bottom: 0;
   margin-bottom: 40px;
+  margin-top: 100px;
   width: 120px;
   padding: 15px;
   font-size: 20px;
@@ -67,7 +76,9 @@
   height: calc(100vh);
   margin-left: 210px;
   /* hide vertical scroll-bar */
-  overflow-y: hidden;
+  /* overflow-y: hidden; */
+  overflow-y: scroll; /* Add vertical scrollbar */
+  overflow-x: scroll;
 }
 
 .mail-list-container {
@@ -75,6 +86,7 @@
   background-color: #ffffffec;
 
   overflow-y: scroll; /* Add vertical scrollbar */
+  overflow-x: scroll;
 
 }
 
@@ -114,7 +126,8 @@
 
 .mail-list li {
   padding: 10px;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #797474;
+  background-color: #ffffff;
   /* cursor: pointer; */
   transition: background-color 0.3s ease;
   border-radius: 10px;
@@ -134,7 +147,7 @@
   display: flex;
   flex:1;
   /* justify-content: space-between; */
-  /* background-color: #007bff; */
+  /* background-color: #dddee0; */
   align-items: center;
   font-size: 1.5em;
 }
@@ -258,6 +271,24 @@
   border: 2px solid #1a1919;
   background-color: #ffffffec;
   cursor: pointer;
+}
+
+.restore-btn{
+  /* margin-left: auto; */
+  margin-right: 20px;
+  font-size: 30px;
+  padding: 10px;
+  border-radius: 10px;
+  color:#007bff;
+  border: 2px solid #1a1919;
+  background-color: #ffffffec;
+  cursor: pointer;
+}
+
+.restore-btn:hover{
+  color: #ffffffec;
+  background-color: #007bff;
+  box-shadow: 0 0 10px #000000;
 }
 
 .reply-button:hover{
