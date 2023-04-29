@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from "react-router-dom";
+import './compose.css';
 
 const ComposePage = ()=>{
     const navigate = useNavigate();
@@ -189,84 +190,34 @@ const ComposePage = ()=>{
         </div>
     )
     else return (
-        <div style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            marginTop: "50px",
-            // backgroundColor: '#530E2D'
-        }}>
-            <h1 style={{fontSize: "36px", marginBottom: "30px", color: "#333"}}>Compose</h1>
-            <form style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              width: "80%",
-              backgroundColor: "#84c3bd",
-              borderRadius: "10px",
-              padding: "50px",
-              boxShadow: "0 0 10px #888888"
-            }}>
-                <label style={{fontSize: "18px", marginBottom: "10px", color: "#333"}}>To</label>
+        <div className='compose'>
+            <h1 >Compose</h1>
+            <form >
+                <label >To</label>
                 <input
                     type="text"
                     value={to_string}
                     onChange={e => setToString(e.target.value)}
-                    style={{
-                    fontSize: "18px",
-                    padding: "10px",
-                    marginBottom: "20px",
-                    borderRadius: "5px",
-                    border: "none",
-                    boxShadow: "0 0 5px #888888",
-                    width: "100%"
-                    }}
                 />
-                <label style={{fontSize: "18px", marginBottom: "10px", color: "#333"}}>Cc</label>
+                <label>Cc</label>
                 <input
                     type="text"
                     value={cc_string}
                     onChange={e => setCcString(e.target.value)}
-                    style={{
-                    fontSize: "18px",
-                    padding: "10px",
-                    marginBottom: "20px",
-                    borderRadius: "5px",
-                    border: "none",
-                    boxShadow: "0 0 5px #888888",
-                    width: "100%"
-                    }}
                 />
-                <label style={{fontSize: "18px", marginBottom: "10px", color: "#333"}}>Subject</label>
+                <label >Subject</label>
                 <input
                     type="text"
                     value={subject}
                     onChange={e => setSubject(e.target.value)}
-                    style={{
-                    fontSize: "18px",
-                    padding: "10px",
-                    marginBottom: "20px",
-                    borderRadius: "5px",
-                    border: "none",
-                    boxShadow: "0 0 5px #888888",
-                    width: "100%"
-                    }}
                 />
-                <label style={{fontSize: "18px", marginBottom: "10px", color: "#333"}}>Content</label>
+                <label >Content</label>
                 <textarea rows = "10" value={content}
                     onChange={e => setContent(e.target.value)}
-                    style={{
-                    fontSize: "18px",
-                    padding: "10px",
-                    marginBottom: "20px",
-                    borderRadius: "5px",
-                    border: "none",
-                    boxShadow: "0 0 5px #888888",
-                    width: "100%"
-                    }}>
+                >
                 </textarea>
                 {/* add a button "schedule mail" which shows time and date picker */}
-                    <label style={{fontSize: "18px", marginBottom: "10px", color: "#333"}}></label>
+                    <label ></label>
                     <button
                         type="button"
                         onClick={e => {
@@ -277,50 +228,23 @@ const ComposePage = ()=>{
                                 setIsScheduled(true);
                             }
                         }}
-                        style={{
-                        fontSize: "18px",
-                        padding: "10px",
-                        marginBottom: "20px",
-                        borderRadius: "5px",
-                        border: "none",
-                        boxShadow: "0 0 5px #888888",
-                        width: "30%"
-                        }}
                     >
                         Schedule Mail
                     </button>
                 {/* add a time and date picker that is shown only on clicking a button*/}
                 {scheduled &&
                 <div style={{display: "flex", flexDirection: "row", alignItems: "left", justifyContent: "space-between", width: "25%"}}>
-                <label style={{fontSize: "18px", marginBottom: "10px", color: "#333"}}></label>
+                <label ></label>
                 <input
                     type="time"
                     value={time}
                     onChange={e => setTime(e.target.value)}
-                    style={{
-                    fontSize: "18px",
-                    padding: "10px",
-                    marginBottom: "20px",
-                    borderRadius: "5px",
-                    border: "none",
-                    boxShadow: "0 0 5px #888888",
-                    width: "30%"
-                    }}
                 />
-                <label style={{fontSize: "18px", marginBottom: "10px", color: "#333"}}></label>
+                <label ></label>
                 <input
                     type="date"
                     value={date}
                     onChange={e => setDate(e.target.value)}
-                    style={{
-                    fontSize: "18px",
-                    padding: "10px",
-                    marginBottom: "20px",
-                    borderRadius: "5px",
-                    border: "none",
-                    boxShadow: "0 0 5px #888888",
-                    width: "50%"
-                    }}
                 />
                 </div>
                 }
@@ -334,28 +258,8 @@ const ComposePage = ()=>{
                         justifyContent: "space-between",
                         width: "25%"
                     }}>
-                <button type="button" onClick={()=>send_mail(false)} style={{
-                    fontSize: "18px",
-                    padding: "10px",
-                    marginTop: "20px",
-                    // width: "100px",
-                    backgroundColor: "#333",
-                    color: "#ffffff",
-                    borderRadius: "5px",
-                    border: "none",
-                    boxShadow: "0 0 5px #888888"
-                }}>Send</button>
-                <button type="button" onClick={()=>send_mail(true)} style={{
-                    fontSize: "18px",
-                    padding: "10px",
-                    marginTop: "20px",
-                    // width: "100px",
-                    backgroundColor: "#333",
-                    color: "#ffffff",
-                    borderRadius: "5px",
-                    border: "none",
-                    boxShadow: "0 0 5px #888888"
-                }}>Save as Draft</button></div>
+                <button type="button" onClick={()=>send_mail(false)}>Send</button>
+                <button type="button" onClick={()=>send_mail(true)}>Save as Draft</button></div>
             </form>
         </div>
     )
