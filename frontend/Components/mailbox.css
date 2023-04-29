@@ -2,7 +2,7 @@
   position: fixed;
   width: 170px; /* Adjust the width as needed */
   height: calc(100vh); /* Set the navigation height to cover the full viewport */
-  background-color: #dedae7; /* Set the background color as desired */
+  background-color: #e7e6e8; /* Set the background color as desired */
   padding: 20px;
   float: left; /* Float the navigation to the left */
   padding-top: 200px;
@@ -25,11 +25,12 @@
 }
 .navigation li a {
   text-decoration: none; /* Remove underline */
-  color: #007bff;
+  color: #040404;
 }
 
 .navigation li a:hover {
-  color: #250ddb; /* Add a hover effect to all links */
+  color: #250ddb; 
+  /* color: #000000; */
 }
 
 .navigation li.active {
@@ -57,6 +58,8 @@
 .navigation button:hover{
   color: #f2f2f2;
   background-color: #e73535;
+  /* shadow */
+  box-shadow: 0 0 10px #000000;
 }
 
 .mail-page-container {
@@ -111,19 +114,20 @@
 
 .mail-list li {
   padding: 10px;
-  border-bottom: 1px solid #1a1919;
-  margin-bottom: 0px;
-
-  background-color: #808080;
-  /* transition: background-color 0.3s ease; */
-}
-
-.mail-list li:hover {
-  background-color: #ddd;
+  border-bottom: 1px solid #ddd;
+  /* cursor: pointer; */
+  transition: background-color 0.3s ease;
+  border-radius: 10px;
 }
 
 .mail-list li.active {
-  background-color: #ccc;
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 10px;
+}
+
+.mail-list li:hover {
+  background-color: #d6d2d2;
 }
 
 
@@ -141,7 +145,7 @@
 
 .mail-status {
   font-weight: bold;
-  color: aqua;
+  color: rgb(0, 0, 0);
 }
 
 .mail-status-read {
@@ -168,11 +172,28 @@
   margin-bottom: 10px;
 }
 
-.mail-display p {
-  margin: 0;
-  font-size: 16px;
-  line-height: 1.5;
+.mail-display {
+  border: 1px solid #ddd;
+  padding: 20px;
+  background-color: #fff;
+  margin: 20px 0;
 }
+
+.mail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mail-item .mail-status {
+  flex: 1;
+}
+
+.mail-item {
+  font-size: 1.5em;
+  /* cursor: pointer; */
+}
+
 
 .secondary-navigation{
   /* background-color: #007bff; */
@@ -183,9 +204,9 @@
   display: flex;
   justify-content: left;
   padding: 30px;
-  margin-bottom: 10px;
+  /* margin-bottom: 10px; */
   border-radius: 10px;
-  margin-left: 0px;
+  margin-left: -40px;
 
 }
 
@@ -226,6 +247,12 @@
   box-shadow: 0 0 10px #000000;
 }
 
+.sender-text{
+  font-size: 20px;
+  font-weight: bold;
+  margin-right: 20px;
+}
+
 @media screen and (max-width: 768px) {
   .mail-page-container {
     flex-direction: column;
@@ -241,46 +268,11 @@
   padding: 20px;
 }
 
-.mail-list li {
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
-  /* cursor: pointer; */
-  transition: background-color 0.3s ease;
-  border-radius: 10px;
-}
-
-.mail-list li.active {
-  background-color: #007bff;
-  color: #fff;
-  border-radius: 10px;
-}
-
-.mail-list li:hover {
-  background-color: #bab7b7;
-}
-
-.mail-display {
-  border: 1px solid #ddd;
-  padding: 20px;
-  background-color: #fff;
-  margin: 20px 0;
-}
 
 
-.mail-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
 
-.mail-item .mail-status {
-  flex: 1;
-}
 
-.mail-item {
-  font-size: 1.5em;
-  /* cursor: pointer; */
-}
+
 
 .resize-handle {
   position: absolute;
