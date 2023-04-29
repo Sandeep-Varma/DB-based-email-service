@@ -100,22 +100,23 @@ const MailPage = () => {
       .then(
         async (response) => {
           if (response[0][0].status === "not_logged_in") navigate("/login");
+          console.log("Hello1",response[1][0])
           setSelectedMailThread([response[1][0]]);
         }
       )
   }
 
   useEffect(() => {
-    console.log("selectedMailthread", selectedMailThread)
-    console.log("tl", tl)
-    if (tl !== selectedMailThread.length) {
+    // console.log("selectedMailthread", selectedMailThread.length, selectedMailThread[0])
+    // console.log("tl", tl)
+    if (tl !== selectedMailThread.length && selectedMailThread[selectedMailThread.length - 1]) {
       setTl(selectedMailThread.length);
     }
   }, [selectedMailThread])
 
   useEffect(() => {
-    if (tl > 0) {
-      console.log(selectedMailThread[0])
+    if (tl > 0 && tl === selectedMailThread.length) {
+      // console.log("Hi",tl,selectedMailThread)
       fetch('http://localhost:4000/get_parent_mail', {
         method: 'POST',
         mode: 'cors',
