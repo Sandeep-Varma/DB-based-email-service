@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams,Link } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { faEnvelopeOpen } from '@fortawesome/free-solid-svg-icons';
@@ -154,13 +154,13 @@ const MailPage = () => {
       <nav class="navigation">
         {/* Navigation items */}
         <ul>
-          <li className><a href="/mail/compose/0/0/0">COMPOSE</a></li>
-          <li className={box === 'inbox' ? 'active' : ''}><a href="/mail/inbox">INBOX</a></li>
-          <li className={box === 'starred' ? 'active' : ''}><a href="/mail/starred">STARRED</a></li>
-          <li className={box === 'sent' ? 'active' : ''}><a href="/mail/sent">SENT</a></li>
-          <li className={box === 'drafts' ? 'active' : ''}><a href="/mail/drafts">DRAFTS</a></li>
-          <li className={box === 'scheduled' ? 'active' : ''}><a href="/mail/scheduled">SCHEDULED</a></li>
-          <li className={box === 'trash' ? 'active' : ''}><a href="/mail/trash">TRASH</a></li>
+          <li className><Link to="/mail/compose/0/0/0">COMPOSE</Link></li>
+          <li className={box === 'inbox' ? 'active' : ''}><Link to="/mail/inbox">INBOX</Link></li>
+          <li className={box === 'starred' ? 'active' : ''}><Link to="/mail/starred">STARRED</Link></li>
+          <li className={box === 'sent' ? 'active' : ''}><Link to="/mail/sent">SENT</Link></li>
+          <li className={box === 'drafts' ? 'active' : ''}><Link to="/mail/drafts">DRAFTS</Link></li>
+          <li className={box === 'scheduled' ? 'active' : ''}><Link to="/mail/scheduled">SCHEDULED</Link></li>
+          <li className={box === 'trash' ? 'active' : ''}><Link to="/mail/trash">TRASH</Link></li>
         </ul>
       </nav>
       <div className="mail-page-container">
