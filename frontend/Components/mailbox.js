@@ -23,9 +23,9 @@ const MailPage = () => {
 
   const renderMailContent = (mail, index) => {
     const indentation = "       ".repeat(index);
-    const indentedContent = indentation +"sender:"+ mail.sender_id;
-    const indentedContent1 = indentation + "subject:"+mail.subject;
-    const indentedContent2 = indentation + "content:"+mail.content;
+    const indentedContent = indentation + "sender:" + mail.sender_id;
+    const indentedContent1 = indentation + "subject:" + mail.subject;
+    const indentedContent2 = indentation + "content:" + mail.content;
 
     return (
       <div>
@@ -262,28 +262,30 @@ const MailPage = () => {
                     }
                   }
                   }>
-                    <div className={`mail-status${mail.read === false ? '' : '-read'}`}>{mail.sender_id} {mail.subject}</div>
-                    <div className={`mail-status${mail.read === false ? '' : '-read'}`}>{mail.time} {mail.read}</div>
-
-                    {(box === 'inbox' || box === 'starred' || box === 'trashed') && (<div className="mark-read-unread" onClick={(e) => {
-                      e.stopPropagation();
-                      modify(mail.sender_id, mail.mail_num, { r: !(mail.read) });
-                      change_read(mail.index)
-                      // mail.read = !(mail.read)
-                    }}>
-                      {mail.read ? <FontAwesomeIcon icon={faEnvelopeOpen} /> : <FontAwesomeIcon icon={faEnvelope} />}
-                      {/* <span>{mail.read ? 'Mark as unread' : 'Mark as read'}</span> */}
-                    </div>)}
-
-
-                    <div className={`mail-star${mail.starred ? '-starred' : ''}`} onClick={(e) => {
-                      e.stopPropagation();
-                      modify(mail.sender_id, mail.mail_num, (box === 'inbox' || box === 'starred' || box === 'trashed') ? { s: !(mail.starred) } : { ss: !(mail.starred) });
-                      change_star(mail.index)
-                    }}>
-                      &#9733;
+                    <div className="left-box">
+                      <div className={`mail-status${mail.read === false ? '' : '-read'}`}>{mail.sender_id} {mail.subject}</div>
+                      <div className={`mail-status${mail.read === false ? '' : '-read'}`}>{mail.time[0]}{mail.time[1]}{mail.time[2]}{mail.time[3]}{mail.time[4]}{mail.time[5]}{mail.time[6]}{mail.time[7]}{mail.time[8]}{mail.time[9]}   {mail.time[12]}{mail.time[13]}{mail.time[14]}{mail.time[15]}{mail.time[16]}{mail.time[17]}{mail.time[18]} </div>
                     </div>
+                    <div className="right-box">
+                      {(box === 'inbox' || box === 'starred' || box === 'trashed') && (<div className="mark-read-unread" onClick={(e) => {
+                        e.stopPropagation();
+                        modify(mail.sender_id, mail.mail_num, { r: !(mail.read) });
+                        change_read(mail.index)
+                        // mail.read = !(mail.read)
+                      }}>
+                        {mail.read ? <FontAwesomeIcon className='icon' icon={faEnvelopeOpen} /> : <FontAwesomeIcon className='icon' icon={faEnvelope} />}
+                        {/* <span>{mail.read ? 'Mark as unread' : 'Mark as read'}</span> */}
+                      </div>)}
 
+
+                      <div className={`mail-star${mail.starred ? '-starred' : ''}`} onClick={(e) => {
+                        e.stopPropagation();
+                        modify(mail.sender_id, mail.mail_num, (box === 'inbox' || box === 'starred' || box === 'trashed') ? { s: !(mail.starred) } : { ss: !(mail.starred) });
+                        change_star(mail.index)
+                      }}>
+                        &#9733;
+                      </div>
+                    </div>
 
                   </div>
                 </li>
@@ -307,6 +309,11 @@ const MailPage = () => {
                 {(box === 'inbox' || box === 'starred') && (<div className="reply-button" onClick={() => navigate("/mail/compose/0/" + selectedMailThread[0].sender_id + "/" + selectedMailThread[0].mail_num)}>
                   Reply
                 </div>)}
+
+                {/* this is for restoring the mail */}
+                {/* {(box === 'trash') && (<div className="reply-button" onClick={() => navigate("/mail/compose/0/" + selectedMailThread[0].sender_id + "/" + selectedMailThread[0].mail_num)}>
+                  Restore
+                </div>)} */}
 
                 {
                   box === 'scheduled' && (<div className="move-to-drafts" onClick={() => {
