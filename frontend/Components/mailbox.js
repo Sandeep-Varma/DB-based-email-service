@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams,Link } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { faEnvelopeOpen } from '@fortawesome/free-solid-svg-icons';
@@ -15,7 +15,6 @@ const MailPage = () => {
   const [done, setDone] = useState(false);
   const [data, setData] = useState([]);
   const [selectedMail, setSelectedMail] = useState(null);
-  const [selectedParentMail, setSelectedParentMail] = useState([]);
   const inbox = box === 'inbox';
   // console.log(inbox)
   const sent = box === 'sent';
@@ -71,11 +70,6 @@ const MailPage = () => {
           if (response[0][0].status === "not_logged_in") navigate("/login");
           console.log(response)
           // to do
-          //push to selectedParentMail
-          console.log("parent mail  ", response[1][0])
-          console.log("selected parent mail  ", selectedParentMail)
-          setSelectedParentMail(prevState => [...prevState, response[1][0]]);
-          console.log(selectedParentMail)
 
         }
       )
@@ -160,13 +154,13 @@ const MailPage = () => {
       <nav class="navigation">
         {/* Navigation items */}
         <ul>
-          <li className><a href="/mail/compose/0/0/0">COMPOSE</a></li>
-          <li className={box === 'inbox' ? 'active' : ''}><a href="/mail/inbox">INBOX</a></li>
-          <li className={box === 'starred' ? 'active' : ''}><a href="/mail/starred">STARRED</a></li>
-          <li className={box === 'sent' ? 'active' : ''}><a href="/mail/sent">SENT</a></li>
-          <li className={box === 'drafts' ? 'active' : ''}><a href="/mail/drafts">DRAFTS</a></li>
-          <li className={box === 'scheduled' ? 'active' : ''}><a href="/mail/scheduled">SCHEDULED</a></li>
-          <li className={box === 'trash' ? 'active' : ''}><a href="/mail/trash">TRASH</a></li>
+          <li className><Link to="/mail/compose/0/0/0">COMPOSE</Link></li>
+          <li className={box === 'inbox' ? 'active' : ''}><Link to="/mail/inbox">INBOX</Link></li>
+          <li className={box === 'starred' ? 'active' : ''}><Link to="/mail/starred">STARRED</Link></li>
+          <li className={box === 'sent' ? 'active' : ''}><Link to="/mail/sent">SENT</Link></li>
+          <li className={box === 'drafts' ? 'active' : ''}><Link to="/mail/drafts">DRAFTS</Link></li>
+          <li className={box === 'scheduled' ? 'active' : ''}><Link to="/mail/scheduled">SCHEDULED</Link></li>
+          <li className={box === 'trash' ? 'active' : ''}><Link to="/mail/trash">TRASH</Link></li>
         </ul>
       </nav>
       <div className="mail-page-container">
@@ -176,12 +170,7 @@ const MailPage = () => {
             <ul className="mail-list">
               {data.map((mail) => (
                 <li key={mail.id}>
-                  <div className="mail-item" onClick={() => {
-                    setSelectedParentMail([]);
-                    FetchMail(mail.sender_id, mail.mail_num);
-                    FetchParentMail(mail.sender_id, mail.mail_num);
-                  }
-                  }>
+                  <div className="mail-item" onClick={() => FetchMail(mail.sender_id, mail.mail_num)}>
                     <div className={`mail-status${mail.read ? '-read' : ''}`}>{mail.sender_id} {mail.subject}</div>
                     <div className={`mail-status${mail.read ? '-read' : ''}`}>{mail.time} {mail.read}</div>
 
@@ -190,7 +179,7 @@ const MailPage = () => {
                       modify(mail.sender_id, mail.mail_num, { r: !(mail.read) });
                       mail.read = !(mail.read)
                     }}>
-                      {mail.read ? <FontAwesomeIcon icon={faEnvelopeOpen} /> : <FontAwesomeIcon icon={faEnvelope} />}
+                      {mail.read ? <FontAwesomeIcon icon={faEnvelope} /> : <FontAwesomeIcon icon={faEnvelopeOpen} />}
                       {/* <span>{mail.read ? 'Mark as unread' : 'Mark as read'}</span> */}
                     </div>)}
 
@@ -218,7 +207,7 @@ const MailPage = () => {
               {!trash && <div className="move-to-trash-button" onClick={() => { modify(selectedMail.sender_id, selectedMail.mail_num, { t: true }); navigate('/mail/' + box) }}>
                 Move to trash
               </div>}
-              {inbox && (<div className="reply-button" onClick={() => navigate("/mail/compose/0/" + selectedMail.sender_id + "/" + selectedMail.mail_num )}>
+              {inbox && (<div className="reply-button" onClick={() => navigate("/mail/compose/" + selectedMail.sender_id + "/" + selectedMail.mail_num + "/0")}>
                 Reply
               </div>)}
 
@@ -241,8 +230,6 @@ const MailPage = () => {
                 <p>mail_num: {selectedMail.mail_num}</p>
                 <p>Subject: {selectedMail.subject}</p>
                 <p>Content:{selectedMail.content}</p>
-
-
                 <p>{selectedMail.body}</p>
               </div>
 
