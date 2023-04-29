@@ -36,7 +36,7 @@ create table mail(
     deleted boolean not null default false,
     -- deleted permanently
     primary key(sender_id, mail_num),
-    foreign key(sender_id) references mail_user(id)
+    foreign key(sender_id) references mail_user(id) on delete cascade
 );
 
 create table recipient(
@@ -52,7 +52,7 @@ create table recipient(
     -- deleted permanently
     primary key(sender_id, mail_num, id),
     foreign key(sender_id, mail_num) references mail(sender_id, mail_num) on delete cascade,
-    foreign key(id) references mail_user(id)
+    foreign key(id) references mail_user(id) on delete cascade
 );
 
 create table mailing_list(
@@ -60,7 +60,7 @@ create table mailing_list(
     list_id varchar(25) not null,
     primary key(id, list_id),
     foreign key(id) references mail_user(id),
-    foreign key(list_id) references mail_user(id)
+    foreign key(list_id) references mail_user(id) on delete cascade
 );
 
 create table reply(
@@ -79,6 +79,6 @@ create table attachment(
     att_num int not null check (att_num >= 0),
     file_id varchar(30) not null,
     primary key(sender_id, mail_num, att_num),
-    foreign key(sender_id, mail_num) references mail(sender_id, mail_num)
+    foreign key(sender_id, mail_num) references mail(sender_id, mail_num) on delete cascade
 );
 
