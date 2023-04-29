@@ -1,11 +1,14 @@
 .navigation {
   position: fixed;
-  width: 130px; /* Adjust the width as needed */
-  height: calc(77vh); /* Set the navigation height to cover the full viewport */
-  background-color: #b382f7; /* Set the background color as desired */
+  width: 170px; /* Adjust the width as needed */
+  height: calc(100vh); /* Set the navigation height to cover the full viewport */
+  background-color: #dedae7; /* Set the background color as desired */
   padding: 20px;
   float: left; /* Float the navigation to the left */
   padding-top: 200px;
+  border-right: #1a1919 solid 5px;
+  border-left: #1a1919 solid 5px;
+  border-top: #1a1919 solid 2px;
 }
 
 .navigation  ul {
@@ -15,34 +18,61 @@
 }
 
 .navigation  li {
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   font-size: 26px; /* Adjust the font size as needed */
   padding-bottom: 30px;
+  
 }
 .navigation li a {
   text-decoration: none; /* Remove underline */
+  color: #007bff;
+}
+
+.navigation li a:hover {
+  color: #250ddb; /* Add a hover effect to all links */
 }
 
 .navigation li.active {
   /* background-color: #f0f0f0; Set the background color for the active page */
   font-weight: bold; /* Apply a different font weight or any other styles */
+  font-style: oblique;
+  font-size: 32px ;
   /* Add any additional styles to highlight the active page */
+}
+
+.navigation button{
+  /* keep the button to the bottom of navigation bar */
+  position: fixed;
+  bottom: 0;
+  margin-bottom: 40px;
+  width: 120px;
+  padding: 15px;
+  font-size: 20px;
+  border-radius: 10px;
+  color: #e73535;
+  background-color: #f2f2f2;
+  cursor: pointer;
+}
+
+.navigation button:hover{
+  color: #f2f2f2;
+  background-color: #e73535;
 }
 
 .mail-page-container {
   display: flex;
   height: calc(100vh);
-  margin-left: 165px;
-  /* padding : 20px; */
+  margin-left: 210px;
+  /* hide vertical scroll-bar */
+  overflow-y: hidden;
 }
 
 .mail-list-container {
   width: 35%;
-  /* background-color: #f2f2f2; */
-  background-color: #eba0a0;
-  /* height: calc(100vh); */
+  background-color: #ffffffec;
 
-  overflow-y: scroll;
+  overflow-y: scroll; /* Add vertical scrollbar */
+
 }
 
 .mail-list {
@@ -51,16 +81,41 @@
   margin: 0;
 }
 
+.mail-list-box h1{
+  text-align: center;
+  font-size: 50px;
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
 
+.input-box{
+  width: 90%;
+  /* bring this to the center */
+  margin-left: 2%;
+  padding: 15px;
+  font-size: 20px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  border: 2px solid #1a1919;
+}
+
+.input-box:focus{
+  border: 5px solid #007bff;
+  outline: auto;
+  /* make it pop out */
+  box-shadow: 0 0 10px #000000;
+  
+
+}
 
 
 .mail-list li {
   padding: 10px;
   border-bottom: 1px solid #1a1919;
-  margin-bottom: 5px;
+  margin-bottom: 0px;
 
-  background-color: #bca7a7;
-  transition: background-color 0.3s ease;
+  background-color: #808080;
+  /* transition: background-color 0.3s ease; */
 }
 
 .mail-list li:hover {

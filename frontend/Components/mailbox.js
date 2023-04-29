@@ -71,6 +71,16 @@ const MailPage = () => {
     // setSc(!sc)
     // console.log("hi")
   }
+  const mark_read = (index) => {
+    console.log("changing read")
+    let temp = data;
+    temp[index].read = true;
+    // console.log(temp[index].read)
+    setData(temp);
+    setC(!c)
+    // setSc(!sc)
+    // console.log("hi")
+  }
 
   const FetchMail = (sender_id, mail_num) => {
     fetch('http://localhost:4000/get_mail/'+box, {
@@ -238,14 +248,16 @@ const MailPage = () => {
       <div className="mail-page-container">
         <div className="mail-list-container">
           <div className="mail-list-box">
-            <h3>{box}</h3>
+            <h1>{box}</h1>
             <ul className="mail-list">
-              <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search by subject or sender ID" />
+              <input className='input-box' type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search by subject or sender ID" />
 
               {sData.map((mail) => (
                 <li key={mail.id}>
                   <div className="mail-item" onClick={() => {
-                    FetchMail(mail.sender_id, mail.mail_num);
+                   { FetchMail(mail.sender_id, mail.mail_num);
+                    modify(mail.sender_id, mail.mail_num, { r: true });
+                      mark_read(mail.index)}
                   }
                   }>
                     <div className={`mail-status${mail.read === false ? '' : '-read'}`}>{mail.sender_id} {mail.subject}</div>
@@ -282,10 +294,10 @@ const MailPage = () => {
           {/* Right box for displaying selected email */}
           {selectedMailThread[0] && (
             <div className="mail-display">
-              {!(box === 'trash') && <div className="move-to-trash-button" onClick={() => { modify(selectedMailThread[0].sender_id, selectedMailThread[0].mail_num, (box === 'inbox' || box === 'starred')?{ t: true }:{ st: true}); navigate('/mail/' + box) }}>
+              {!(box === 'trash') && <div className="move-to-trash-button" onClick={() => { modify(selectedMailThread[0].sender_id, selectedMailThread[0].mail_num, (box === 'inbox' || box === 'starred')?{ t: true }:{ st: true}); navigate(0);console.log("hi") }}>
                 Move to trash
               </div>}
-              {box === 'trash' && <div className="move-to-trash-button" onClick={() => { modify(selectedMailThread[0].sender_id, selectedMailThread[0].mail_num, { d: true }); navigate('/mail/' + box) }}>
+              {box === 'trash' && <div className="move-to-trash-button" onClick={() => { modify(selectedMailThread[0].sender_id, selectedMailThread[0].mail_num, { d: true }); navigate(0) }}>
                 Delete
               </div>}
               {(box === 'inbox' || box === 'starred') && (<div className="reply-button" onClick={() => navigate("/mail/compose/0/" + selectedMailThread[0].sender_id + "/" + selectedMailThread[0].mail_num)}>
