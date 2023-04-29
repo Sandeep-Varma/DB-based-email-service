@@ -106,17 +106,21 @@ async function modify (id, sender_id, mail_num, mod){
     if (id == sender_id){
         queries = []
         params = []
-        if (mod.s){
+        if (mod.hasOwnProperty("s")){
             queries.push("update mail set starred = $1 where sender_id = $2 and mail_num = $3")
             params.push([mod.s, sender_id, mail_num])
         }
-        if (mod.t){
+        if (mod.hasOwnProperty("t")){
             queries.push("update mail set trashed = $1 where sender_id = $2 and mail_num = $3")
             params.push([mod.t, sender_id, mail_num])
         }
-        if (mod.d){
+        if (mod.hasOwnProperty("d")){
             queries.push("update mail set deleted = $1 where sender_id = $2 and mail_num = $3")
             params.push([mod.d, sender_id, mail_num])
+        }
+        if(mod.hasOwnProperty("dr")){
+            queries.push("update mail  set is_draft = $1 where sender_id = $2 and mail_num = $3")
+            params.push([mod.dr, sender_id, mail_num])
         }
         try {
             output = await execute(queries,params)
@@ -128,19 +132,20 @@ async function modify (id, sender_id, mail_num, mod){
     else{
         queries = []
         params = []
-        if (mod.s){
+        if (mod.hasOwnProperty("s")){
+            console.log("modifying starred")
             queries.push("update recipient set starred = $1 where sender_id = $2 and mail_num = $3 and id = $4")
             params.push([mod.s, sender_id, mail_num, id])
         }
-        if (mod.r){
+        if (mod.hasOwnProperty("r")){
             queries.push("update recipient set read = $1 where sender_id = $2 and mail_num = $3 and id = $4")
             params.push([mod.r, sender_id, mail_num, id])
         }
-        if (mod.t){
+        if (mod.hasOwnProperty("t")){
             queries.push("update recipient set trashed = $1 where sender_id = $2 and mail_num = $3 and id = $4")
             params.push([mod.t, sender_id, mail_num, id])
         }
-        if (mod.d){
+        if (mod.hasOwnProperty("d")){
             queries.push("update recipient set deleted = $1 where sender_id = $2 and mail_num = $3 and id = $4")
             params.push([mod.d, sender_id, mail_num, id])
         }

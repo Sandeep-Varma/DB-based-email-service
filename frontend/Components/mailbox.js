@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams,Link } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { faEnvelopeOpen } from '@fortawesome/free-solid-svg-icons';
@@ -14,18 +14,31 @@ const MailPage = () => {
   const [logged_in, setLoggedIn] = useState(false);
   const [done, setDone] = useState(false);
   const [data, setData] = useState([]);
-  const [selectedMail, setSelectedMail] = useState(null);
-  const [selectedParentMail, setSelectedParentMail] = useState([]);
+  const [selectedMailThread, setSelectedMailThread] = useState([]);
   const inbox = box === 'inbox';
-  // console.log(inbox)
   const sent = box === 'sent';
   const scheduled = box === 'scheduled';
   const starred = box === 'starred';
   const draft = box === 'drafts';
   const trash = box === 'trash';
+  const [tl, setTl] = useState(0);
 
+  const renderMailContent = (mail, index) => {
+    const indentation = "       ".repeat(index);
+    const indentedContent = indentation + mail.sender_id;
+    const indentedContent1 = indentation + mail.subject;
+    const indentedContent2 = indentation + mail.content;
 
+   return(
+    <div>
+      <pre>{indentedContent}</pre>
+      <pre>{indentedContent1}</pre>
+      <pre>{indentedContent2}</pre>
+      <div style={{ marginBottom: "70px" }}></div>
+    </div>
+   )
 
+  };
 
   const FetchMail = (sender_id, mail_num) => {
     fetch('http://localhost:4000/get_mail', {
@@ -45,42 +58,88 @@ const MailPage = () => {
       .then(
         async (response) => {
           if (response[0][0].status === "not_logged_in") navigate("/login");
-          console.log(response)
-          setSelectedMail(response[1][0]);
+          setSelectedMailThread([response[1][0]]);
         }
       )
   }
 
-  const FetchParentMail = (sender_id, mail_num) => {
-    fetch('http://localhost:4000/get_parent_mail', {
-      method: 'POST',
-      mode: 'cors',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify({
-        sender_id: sender_id,
-        mail_num: mail_num
+  useEffect(() => {
+    console.log("selectedMailthread", selectedMailThread)
+    console.log("tl", tl)
+    if (tl != selectedMailThread.length) {
+      setTl(selectedMailThread.length);
+    }
+  }, [selectedMailThread])
+
+  useEffect(() => {
+
+    if (tl > 0) {
+      console.log(selectedMailThread[0])
+      fetch('http://localhost:4000/get_parent_mail', {
+        method: 'POST',
+        mode: 'cors',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          sender_id: selectedMailThread[selectedMailThread.length - 1].sender_id,
+          mail_num: selectedMailThread[selectedMailThread.length - 1].mail_num
+        })
       })
-    })
-      .then(response => response.json())
-      .then(
-        async (response) => {
-          if (response[0][0].status === "not_logged_in") navigate("/login");
-          console.log(response)
-          // to do
-          //push to selectedParentMail
-          console.log("parent mail  ", response[1][0])
-          console.log("selected parent mail  ", selectedParentMail)
-          if(selectedParentMail.length === 0) setSelectedParentMail([response[1][0]]);
-          else setSelectedParentMail(prevState => [...prevState, response[1][0]]);
-          console.log(selectedParentMail)
+        .then(response => response.json())
+        .then(
+          async (response) => {
+            if (response[0][0].status === "not_logged_in") navigate("/login");
+            console.log(response)
+            if (response[1].length != 0) {
+              setSelectedMailThread(selectedMailThread.concat([response[1][0]]))
+              console.log(selectedMailThread)
+              // return true;
+            }
 
-        }
-      )
-  }
+
+          }
+        )
+    }
+  }, [tl])
+
+
+  // const FetchParentMail = () => {
+  //   // if(false)
+  //   if(false){
+  //   fetch('http://localhost:4000/get_parent_mail', {
+  //     method: 'POST',
+  //     mode: 'cors',
+  //     credentials: 'include',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       'Accept': 'application/json'
+  //     },
+  //     body: JSON.stringify({
+  //       sender_id: selectedMailThread[selectedMailThread.length - 1].sender_id,
+  //       mail_num: selectedMailThread[selectedMailThread.length - 1].mail_num
+  //     })
+  //   })
+  //     .then(response => response.json())
+  //     .then(
+  //       async (response) => {
+  //         if (response[0][0].status === "not_logged_in") navigate("/login");
+  //         console.log(response)
+  //         // to do
+  //         //push to selectedParentMail
+  //         if (response[1][0] != 0) {
+  //           setSelectedMailThread(selectedMailThread.concat([response[1][0]]))
+  //           console.log(selectedMailThread)
+  //           // return true;
+  //         }
+
+
+  //       }
+  //     )
+  //   }
+  // }
 
   const Deletmail = (sender_id, mail_num) => {
     console.log("delete called")
@@ -178,15 +237,15 @@ const MailPage = () => {
               {data.map((mail) => (
                 <li key={mail.id}>
                   <div className="mail-item" onClick={() => {
-                    setSelectedParentMail([]);
+                    // setSelectedParentMail([]);
                     FetchMail(mail.sender_id, mail.mail_num);
-                    FetchParentMail(mail.sender_id, mail.mail_num);
+                    // FetchParentMail(mail.sender_id, mail.mail_num);
                   }
                   }>
                     <div className={`mail-status${mail.read ? '-read' : ''}`}>{mail.sender_id} {mail.subject}</div>
                     <div className={`mail-status${mail.read ? '-read' : ''}`}>{mail.time} {mail.read}</div>
 
-                    {(inbox || starred )&&(<div className="mark-read-unread" onClick={(e) => {
+                    {(inbox || starred) && (<div className="mark-read-unread" onClick={(e) => {
                       e.stopPropagation();
                       modify(mail.sender_id, mail.mail_num, { r: !(mail.read) });
                       mail.read = !(mail.read)
@@ -214,36 +273,39 @@ const MailPage = () => {
         </div>
         <div className="mail-display-container">
           {/* Right box for displaying selected email */}
-          {selectedMail && (
+          {selectedMailThread[0] && (
             <div className="mail-display">
-              {!trash && <div className="move-to-trash-button" onClick={() => { modify(selectedMail.sender_id, selectedMail.mail_num, { t: true }); navigate('/mail/' + box) }}>
+              {!trash && <div className="move-to-trash-button" onClick={() => { modify(selectedMailThread[0].sender_id, selectedMailThread[0].mail_num, { t: true }); navigate('/mail/' + box) }}>
                 Move to trash
               </div>}
-              {inbox && (<div className="reply-button" onClick={() => navigate("/mail/compose/0/" + selectedMail.sender_id + "/" + selectedMail.mail_num )}>
+              {(inbox || starred) && (<div className="reply-button" onClick={() => navigate("/mail/compose/0/" + selectedMailThread[0].sender_id + "/" + selectedMailThread[0].mail_num)}>
                 Reply
               </div>)}
 
               {
-                scheduled && (<div className="move-to-drafts" onClick={() => navigate("/mail/compose/" + selectedMail.mail_num + "/0/0")}>
+                scheduled && (<div className="move-to-drafts" onClick={() => {
+                  modify(selectedMailThread[0].sender_id, selectedMailThread[0].mail_num, { dr: "true" });
+                  navigate('/mail/inbox')
+                }
+
+                }>
                   Move to drafts
                 </div>
                 )}
 
               {
-                draft && (<div className="edit-draft" onClick={() => navigate("/mail/compose/"  + selectedMail.mail_num + "/0/0")}>
+                draft && (<div className="edit-draft" onClick={() => navigate("/mail/compose/" + selectedMailThread[0].mail_num + "/0/0")}>
                   SEND OR EDIT DRAFT
                 </div>)
               }
 
               <div>
-                <h2>{selectedMail.subject}</h2>
-                <p>Sent at: {selectedMail.time}</p>
-                <p>sender_id: {selectedMail.sender_id}</p>
-                <p>mail_num: {selectedMail.mail_num}</p>
-                <p>Subject: {selectedMail.subject}</p>
-                <p>Content:{selectedMail.content}</p>
-                
-                <p>{selectedMail.body}</p>
+                {/* NEEd to write the code here */}
+                {selectedMailThread.map((mail, index) => (
+                  <div key={mail.id}>
+                    {renderMailContent(mail, index)}
+                  </div>
+                ))}
               </div>
 
             </div>
