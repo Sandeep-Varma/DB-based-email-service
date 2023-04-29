@@ -13,8 +13,11 @@ const MailPage = () => {
   const [server_error, setServerError] = useState(false);
   const [logged_in, setLoggedIn] = useState(false);
   const [done, setDone] = useState(false);
+  const [sData, setSData] = useState([]);
   const [data, setData] = useState([]);
   const [selectedMailThread, setSelectedMailThread] = useState([]);
+  const [c,setC] = useState(true)
+  const [sc,setSc] = useState(true)
   const inbox = box === 'inbox';
   const sent = box === 'sent';
   const scheduled = box === 'scheduled';
@@ -22,6 +25,7 @@ const MailPage = () => {
   const draft = box === 'drafts';
   const trash = box === 'trash';
   const [tl, setTl] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const renderMailContent = (mail, index) => {
     const indentation = "       ".repeat(index);
@@ -29,16 +33,44 @@ const MailPage = () => {
     const indentedContent1 = indentation + mail.subject;
     const indentedContent2 = indentation + mail.content;
 
-   return(
-    <div>
-      <pre>{indentedContent}</pre>
-      <pre>{indentedContent1}</pre>
-      <pre>{indentedContent2}</pre>
-      <div style={{ marginBottom: "70px" }}></div>
-    </div>
-   )
+    return (
+      <div>
+        <pre>{indentedContent}</pre>
+        <pre>{indentedContent1}</pre>
+        <pre>{indentedContent2}</pre>
+        <div style={{ marginBottom: "70px" }}></div>
+      </div>
+    )
 
   };
+
+  const handleLogout = ()=>{
+    fetch('http://localhost:4000/logout' , {
+        method: 'GET',
+        mode: 'cors',
+        credentials: 'include',
+      }).then(navigate('/login'))
+     
+  }
+
+  const change_star = (index) => {
+    var temp = data;
+    console.log(temp[index].starred)
+    temp[index].starred = !(temp[index].starred);
+    console.log(temp[index].starred)
+    setC(!c)
+  }
+
+  const change_read = (index) => {
+    console.log("change_read")
+    var temp = data;
+    console.log(temp[index].starred)
+    temp[index].read = !(temp[index].read);
+    // setData(temp);
+    setC(!c)
+    setSc(!sc)
+    // console.log("hi")
+  }
 
   const FetchMail = (sender_id, mail_num) => {
     fetch('http://localhost:4000/get_mail', {
@@ -106,44 +138,26 @@ const MailPage = () => {
   }, [tl])
 
 
-  // const FetchParentMail = () => {
-  //   // if(false)
-  //   if(false){
-  //   fetch('http://localhost:4000/get_parent_mail', {
-  //     method: 'POST',
-  //     mode: 'cors',
-  //     credentials: 'include',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       'Accept': 'application/json'
-  //     },
-  //     body: JSON.stringify({
-  //       sender_id: selectedMailThread[selectedMailThread.length - 1].sender_id,
-  //       mail_num: selectedMailThread[selectedMailThread.length - 1].mail_num
-  //     })
-  //   })
-  //     .then(response => response.json())
-  //     .then(
-  //       async (response) => {
-  //         if (response[0][0].status === "not_logged_in") navigate("/login");
-  //         console.log(response)
-  //         // to do
-  //         //push to selectedParentMail
-  //         if (response[1][0] != 0) {
-  //           setSelectedMailThread(selectedMailThread.concat([response[1][0]]))
-  //           console.log(selectedMailThread)
-  //           // return true;
-  //         }
-
-
-  //       }
-  //     )
-  //   }
-  // }
-
   const Deletmail = (sender_id, mail_num) => {
     console.log("delete called")
   }
+
+
+
+
+
+  useEffect(() => {
+    console.log("dskhgjhsjkgbjkdsbyyyyyyy")
+    if (searchQuery != '') {
+      setSData(data.filter((mail) => {
+        return mail.sender_id.toLowerCase().includes(searchQuery.toLowerCase()) || mail.subject.toLowerCase().includes(searchQuery.toLowerCase())
+      }))
+    } else {
+      console.log("heyyyyyyyyyyyyyy")
+      setSData([])
+      setSData(data)
+    }
+  }, [searchQuery, c])
 
   useEffect(() => {
     const f = async () => {
@@ -164,7 +178,14 @@ const MailPage = () => {
 
             }
             setDone(true)
-            setData(response[2]);
+            var temp = response[2];
+            // iterate through response[2] and add a new key "index" to each mail object
+            for (let i = 0; i < temp.length; i++) {
+              temp[i].index = i;
+            }
+            setData(temp);
+            setSData(temp);
+            console.log(temp)
           }
         )
         .catch((error) => { console.log(error); });
@@ -227,6 +248,7 @@ const MailPage = () => {
           <li className={box === 'drafts' ? 'active' : ''}><Link to="/mail/drafts">DRAFTS</Link></li>
           <li className={box === 'scheduled' ? 'active' : ''}><Link to="/mail/scheduled">SCHEDULED</Link></li>
           <li className={box === 'trash' ? 'active' : ''}><Link to="/mail/trash">TRASH</Link></li>
+          <button onClick={handleLogout}>Logout</button>
         </ul>
       </nav>
       <div className="mail-page-container">
@@ -234,12 +256,12 @@ const MailPage = () => {
           <div className="mail-list-box">
             <h3>{box}</h3>
             <ul className="mail-list">
-              {data.map((mail) => (
+              <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search by subject or sender ID" />
+
+              {(sc || !sc ) && sData.map((mail) => (
                 <li key={mail.id}>
                   <div className="mail-item" onClick={() => {
-                    // setSelectedParentMail([]);
                     FetchMail(mail.sender_id, mail.mail_num);
-                    // FetchParentMail(mail.sender_id, mail.mail_num);
                   }
                   }>
                     <div className={`mail-status${mail.read ? '-read' : ''}`}>{mail.sender_id} {mail.subject}</div>
@@ -248,6 +270,7 @@ const MailPage = () => {
                     {(inbox || starred) && (<div className="mark-read-unread" onClick={(e) => {
                       e.stopPropagation();
                       modify(mail.sender_id, mail.mail_num, { r: !(mail.read) });
+                      change_read(mail.index)
                       mail.read = !(mail.read)
                     }}>
                       {mail.read ? <FontAwesomeIcon icon={faEnvelopeOpen} /> : <FontAwesomeIcon icon={faEnvelope} />}
@@ -257,8 +280,15 @@ const MailPage = () => {
 
                     <div className={`mail-star${mail.starred ? '-starred' : ''}`} onClick={(e) => {
                       e.stopPropagation();
-                      modify(mail.sender_id, mail.mail_num, { s: !(mail.starred) });
-                      mail.starred = !(mail.starred)
+                      // modify(mail.sender_id, mail.mail_num, { s: !(mail.starred) });
+                      change_star(mail.index)
+
+                      // var temp = data;
+                      // temp[mail.index].starred = !(temp[mail.index].starred);
+                      // setData(temp);
+                      // console.log("hi")
+
+                      // mail.starred = !(mail.starred)
                     }}>
                       &#9733;
                     </div>
