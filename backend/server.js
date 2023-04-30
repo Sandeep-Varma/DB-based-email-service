@@ -267,11 +267,6 @@ app.post('/send_mail/:num',
     }
 )
 
-app.post('/move_to_trash',
-    async (req,res)=>{
-    }
-)
-
 app.post('/modify',
     async (req,res)=>{
         id = req.session.user_id
@@ -291,11 +286,32 @@ app.post('/modify',
 
 app.post('/new_mailing_list',
     async (req,res)=>{
+        id = req.session.user_id
+        list_id = req.body.list_id
+        if (id){
+            queries = ["INSERT into mail_user values ($1,$2,$3);"]
+            params = [[list_id,"0","Mailing list"]]
+            execute(queries,params)
+            .then(output => {
+                res.send(output)
+            })
+        }
+        else res.send([[{ "status":"not_logged_in"}]])
     }
 )
 
 app.post('/add_to_mailing_list',
     async (req,res)=>{
+        id = req.session.user_id
+        if (id){
+            queries = ["INSERT INTO mailing_list VALUES ($1, $2);"]
+            params = [[req.body.user_id, req.body.list_id]]
+            execute(queries,params)
+            .then(output => {
+                res.send(output)
+            })
+        }
+        else res.send([[{ "status":"not_logged_in"}]])
     }
 )
 

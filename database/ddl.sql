@@ -19,7 +19,6 @@ create table mail_user(
     profile_pic varchar(30),
     num_mails int not null default 0 check (num_mails >= 0),
     -- number of mails sent by the user
-    -- or is -1 for a mailing list
     primary key(id)
 );
 
@@ -59,7 +58,7 @@ create table mailing_list(
     id varchar(25) not null,
     list_id varchar(25) not null,
     primary key(id, list_id),
-    foreign key(id) references mail_user(id),
+    foreign key(id) references mail_user(id) on delete cascade,
     foreign key(list_id) references mail_user(id) on delete cascade
 );
 
