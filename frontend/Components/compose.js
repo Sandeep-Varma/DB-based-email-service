@@ -131,8 +131,8 @@ const ComposePage = () => {
                                 p_id: pid,
                                 p_mn: pmn,
                                 attachments: {
-                                    names: attachmentNames, // Pass the attachment names
-                                    data: attachmentData // Pass the attachment data
+                                    names: selectedFileNames, // Pass the attachment names
+                                    data: selectedFilesData // Pass the attachment data
                                 }
                             })
                         })
