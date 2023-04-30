@@ -180,7 +180,8 @@ async function delete_draft(id, mail_num) {
     }
 }
 
-async function send_mail (id, subject, content, to_recipients, cc_recipients, is_draft, is_scheduled, send_time, p_id, p_mn) {
+async function send_mail (id, subject, content, to_recipients, cc_recipients, is_draft, is_scheduled, send_time, p_id, p_mn, att) {
+    console.log(att.names)
     if (is_scheduled) {
         queries = ["INSERT into mail values ($1, 1+(select num_mails from mail_user where id=$2), $3, $4, $5, $6, $7, $8);"]
         params = [[id, id, send_time, subject, content, is_draft, false, false]]

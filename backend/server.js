@@ -241,6 +241,7 @@ app.post('/send_mail/:num',
         send_time = req.body.send_time
         p_id = req.body.p_id
         p_mn = req.body.p_mn
+        att = req.body.att
         if (id){
             if (num != 0){
                 delete_draft(id,num)
@@ -252,7 +253,7 @@ app.post('/send_mail/:num',
                     res.send([[{"status":"err_editing_draft"}]])
                 })
             }
-            send_mail(id,subject,content,to_recipients,cc_recipients,is_draft,is_scheduled,send_time,p_id,p_mn)
+            send_mail(id,subject,content,to_recipients,cc_recipients,is_draft,is_scheduled,send_time,p_id,p_mn,att)
             .then(output => {
                 console.log("mail sent")
                 res.send(output)
