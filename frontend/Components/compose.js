@@ -4,6 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import { faSave } from '@fortawesome/free-solid-svg-icons';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faRocket } from '@fortawesome/free-solid-svg-icons';
 
 import './compose.css'
 
@@ -32,6 +34,26 @@ const ComposePage = () => {
     const [selectedFileNames, setSelectedFileNames] = useState([]);
     const [selectedFilesData, setSelectedFilesData] = useState([]);
 
+
+    const removeFile = (index) => {
+        setSelectedFiles((prevFiles) => {
+          const updatedFiles = [...prevFiles];
+          updatedFiles.splice(index, 1);
+          return updatedFiles;
+        });
+      
+        setSelectedFileNames((prevNames) => {
+          const updatedNames = [...prevNames];
+          updatedNames.splice(index, 1);
+          return updatedNames;
+        });
+      
+        setSelectedFilesData((prevData) => {
+          const updatedData = [...prevData];
+          updatedData.splice(index, 1);
+          return updatedData;
+        });
+      };
 
 
     const handleFileChange = (event) => {
@@ -275,7 +297,7 @@ const ComposePage = () => {
 
                 {/* add a time and date picker that is shown only on clicking a button*/}
                 {scheduled &&
-                    <div style={{ display: "flex", flexDirection: "row", alignItems: "left", justifyContent: "space-between", width: "25%" }}>
+                    <div style={{ display: "flex", flexDirection: "row", alignItems: "left", justifyContent: "space-between", width: "35%" }}>
                         <label ></label>
                         <input
                             type="time"
@@ -299,7 +321,7 @@ const ComposePage = () => {
                         justifyContent: "space-between",
                         width: "25%"
                     }}>
-                        <button className='send-btn' type="button" onClick={() => send_mail(false)}><FontAwesomeIcon icon={faPaperPlane} size='2x' /></button>
+                        <button className='send-btn' type="button" onClick={() => send_mail(false)}><FontAwesomeIcon icon={faRocket} size='2x' /></button>
                         <button className='save-btn' type="button" onClick={() => send_mail(true)}><FontAwesomeIcon icon={faSave} size='2x' /></button>
                         <button className='schedule-btn'
                             type="button"
@@ -315,21 +337,38 @@ const ComposePage = () => {
                         </button>
 
                     </div>
-                    <div className='attachments-div'>
-                        {selectedFiles.length > 0 && (
-                            <div>
-                                <div>Selected Files:</div>
-                                <ul>
-                                    {selectedFiles.map((file, index) => (
-                                        <li key={index}>{file.name}</li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
+                    <div className="file-selection-container">
+                        <div className="attachments-div">
+                            {selectedFiles.length > 0 && (
+                                <div className="selected-files-container">
+                                    <div className="selected-files-heading">Selected Files:</div>
+                                    <ul className="selected-files-list">
+                                        {selectedFiles.map((file, index) => (
+                                            <li key={index} className="selected-file-item">
+                                                <span className="file-name">{file.name}</span> 
+                                                <FontAwesomeIcon
+                                                    icon={faTimes}
+                                                    
+                                                    className="remove-file-icon"
+                                                    onClick={() => removeFile(index)}
+                                                />
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
 
-                        {/* File input field */}
-                        {/* <label>Attachments</label> */}
-                        <input type="file" multiple onChange={handleFileChange} />
+                            <label htmlFor="file-input" className="file-input-label">
+                                <input
+                                    type="file"
+                                    id="file-input"
+                                    multiple
+                                    onChange={handleFileChange}
+                                    className="file-input"
+                                />
+                                <span className="file-input-text">Select Files</span>
+                            </label>
+                        </div>
                     </div>
                 </div>
             </form>

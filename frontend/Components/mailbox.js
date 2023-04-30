@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
-import { faEnvelopeOpen } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelopeOpen,faReply,faTrash,faUndo,faTrashAlt,faEdit } from '@fortawesome/free-solid-svg-icons';
 // import React, { useEffect, useState } from 'react';
 import "./mailbox.css"
 import "./mailbox2.css"
@@ -346,18 +346,18 @@ else return (
         <div className="mail-display">
           <nav className='secondary-navigation'>
             {!(box === 'trash') && <div className="move-to-trash-button" onClick={() => { modify(selectedMailThread[0].sender_id, selectedMailThread[0].mail_num, (box === 'inbox' || box === 'starred') ? { t: true } : { st: true }); navigate(0); console.log("hi") }}>
-              Move to trash
+            <FontAwesomeIcon icon={faTrash} size='xl' />
             </div>}
 
             {box === 'trash' && <div className="restore-btn" onClick={() => { modify(selectedMailThread[0].sender_id, selectedMailThread[0].mail_num, { t: false }); navigate(0) }}>
-              Restore
+            <FontAwesomeIcon icon={faUndo} size='xl' />
             </div>}
 
             {box === 'trash' && <div className="move-to-trash-button" onClick={() => { modify(selectedMailThread[0].sender_id, selectedMailThread[0].mail_num, { d: true }); navigate(0) }}>
-              Delete
+            <FontAwesomeIcon icon={faTrashAlt} size='xl' />
             </div>}
             {(box === 'inbox' || box === 'starred') && (<div className="reply-button" onClick={() => navigate("/mail/compose/0/" + selectedMailThread[0].sender_id + "/" + selectedMailThread[0].mail_num)}>
-              Reply
+            <FontAwesomeIcon icon={faReply} size='xl' />
             </div>)}
 
 
@@ -375,7 +375,7 @@ else return (
 
             {
               box === 'drafts' && (<div className="edit-draft" onClick={() => navigate("/mail/compose/" + selectedMailThread[0].mail_num + "/0/0")}>
-                SEND OR EDIT DRAFT
+               <FontAwesomeIcon icon={faEdit} size='xl' />
               </div>)
             }
           </nav>
