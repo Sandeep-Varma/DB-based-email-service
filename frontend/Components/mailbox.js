@@ -37,6 +37,16 @@ const MailPage = () => {
     )
   };
 
+  const view_dt = (time) => {
+    let now = new Date();
+    let today = new Date(now.getFullYear()+'/'+(now.getMonth()+1)+'/'+now.getDate());
+    let date = new Date(time.substr(0,10));
+    let diff = (today - date)/(1000*60*60*24);
+    if (diff === 0) return "Today "+time.substr(11,5);
+    else if (diff <= 6) return time.substr(17,3)+" "+time.substr(11,5);
+    else return time.substr(0,16)
+  }
+
   const handleLogout = () => {
     fetch('http://localhost:4000/logout', {
       method: 'GET',
@@ -100,22 +110,19 @@ const MailPage = () => {
       .then(
         async (response) => {
           if (response[0][0].status === "not_logged_in") navigate("/login");
-          setSelectedMailThread([response[1][0]]);
+          else setSelectedMailThread([response[1][0]]);
         }
       )
   }
 
   useEffect(() => {
-    console.log("selectedMailthread", selectedMailThread)
-    console.log("tl", tl)
-    if (tl !== selectedMailThread.length) {
+    if (tl !== selectedMailThread.length && selectedMailThread[selectedMailThread.length - 1]) {
       setTl(selectedMailThread.length);
     }
   }, [selectedMailThread])
 
   useEffect(() => {
-    if (tl > 0) {
-      console.log(selectedMailThread[0])
+    if (tl > 0 && tl === selectedMailThread.length) {
       fetch('http://localhost:4000/get_parent_mail', {
         method: 'POST',
         mode: 'cors',
@@ -265,10 +272,10 @@ const MailPage = () => {
                     <div className="left-box">
                       <div className='left-upper-box'>
                         <p className={`mail-status${mail.read === false ? '' : '-read'}`}>{mail.sender_id} </p>
-                        <p className={`mail-status${mail.read === false ? '' : '-read'}`}>{mail.time[0]}{mail.time[1]}{mail.time[2]}{mail.time[3]}{mail.time[4]}{mail.time[5]}{mail.time[6]}{mail.time[7]}{mail.time[8]}{mail.time[9]}   {mail.time[12]}{mail.time[13]}{mail.time[14]}{mail.time[15]}{mail.time[16]}{mail.time[17]}{mail.time[18]}</p>
+                        <p className={`mail-status${mail.read === false ? '' : '-read'}`}>{view_dt(mail.time)}</p>
                       </div>
                       <div className='left-lower-box'>
-                      <div className={`mail-status-subj${mail.read === false ? '' : '-read'}`}>  {mail.subject === ''? 'No Subject ' : mail.subject} </div>
+                      <div className={`mail-status-subj${mail.read === false ? '' : '-read'}`}>  {mail.subject === ''? '(no subject)' : ((mail.subject.length > 25)?mail.subject.substr(0,22)+"...":mail.subject)} </div>
                       </div>
                     </div>
                     <div className="right-box">

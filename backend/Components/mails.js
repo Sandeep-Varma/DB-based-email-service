@@ -1,11 +1,11 @@
-const { execute, executemany } = require('./postgres_connect')
+const { execute, consistent_execute, executemany } = require('./postgres_connect')
 
 async function get_mailbox (id, box) {
     queries = ["SELECT id, name FROM mail_user where id = $1;"]
     params = [[id]]
 
     if (box == "inbox") {
-        queries.push("select m.sender_id, m.mail_num, m.time, m.subject, r.read, r.starred \
+        queries.push("select m.sender_id, m.mail_num, to_char(timezone('Asia/Kolkata',m.time),'YYYY/MM/DD HH24:MM Day') as time, m.subject, r.read, r.starred \
                     from mail as m join recipient as r using (sender_id, mail_num) \
                     where (r.id = $1 or r.id in (select list_id from mailing_list where id = $1)) \
                     and time < (select now from now()) \
@@ -14,7 +14,7 @@ async function get_mailbox (id, box) {
         params.push([id])
     }
     else if (box == "starred") {
-        queries.push("select m.sender_id, m.mail_num, m.time, m.subject, r.read, r.starred \
+        queries.push("select m.sender_id, m.mail_num, to_char(timezone('Asia/Kolkata',m.time),'YYYY/MM/DD HH24:MM Day') as time, m.subject, r.read, r.starred \
                     from mail as m join recipient as r using (sender_id, mail_num) \
                     where (r.id = $1 or r.id in (select list_id from mailing_list where id = $1)) \
                     and time < (select now from now()) \
@@ -23,31 +23,31 @@ async function get_mailbox (id, box) {
         params.push([id])
     }
     else if (box == "sent") {
-        queries.push("select * from mail where sender_id = $1 and time < (select now from now()) \
+        queries.push("select sender_id, mail_num, to_char(timezone('Asia/Kolkata',time),'YYYY/MM/DD HH24:MM Day') as time, subject, content, is_draft, starred, trashed, deleted from mail where sender_id = $1 and time < (select now from now()) \
                     and not is_draft and not trashed and not deleted \
                     order by time desc;")
         params.push([id])
     }
     else if (box == "drafts") {
-        queries.push("select * from mail where sender_id = $1 and is_draft \
+        queries.push("select sender_id, mail_num, to_char(timezone('Asia/Kolkata',time),'YYYY/MM/DD HH24:MM Day') as time, subject, content, is_draft, starred, trashed, deleted from mail where sender_id = $1 and is_draft \
                     and not trashed and not deleted \
                     order by time desc;")
         params.push([id])
     }
     else if (box == "trash") {
-        queries.push("select m.sender_id, m.mail_num, m.time, m.subject, r.read, r.starred \
+        queries.push("select m.sender_id, m.mail_num, to_char(timezone('Asia/Kolkata',m.time),'YYYY/MM/DD HH24:MM Day') as time, m.subject, r.read, r.starred \
                     from mail as m join recipient as r using (sender_id, mail_num) \
                     where (r.id = $1 or r.id in (select list_id from mailing_list where id = $1)) \
                     and time < (select now from now()) \
                     and not is_draft and r.trashed and not r.deleted \
                     order by time desc;")
         params.push([id])
-        queries.push("select * from mail where sender_id = $1 and trashed and not deleted \
+        queries.push("select sender_id, mail_num, to_char(timezone('Asia/Kolkata',time),'YYYY/MM/DD HH24:MM Day') as time, subject, content, is_draft, starred, trashed, deleted from mail where sender_id = $1 and trashed and not deleted \
                     order by time desc;")
         params.push([id])
     }
     else if (box == "scheduled") {
-        queries.push("select * from mail where sender_id = $1 and time > (select now from now()) \
+        queries.push("select sender_id, mail_num, to_char(timezone('Asia/Kolkata',time),'YYYY/MM/DD HH24:MM Day') as time, subject, content, is_draft, starred, trashed, deleted from mail where sender_id = $1 and time > (select now from now()) \
                     and not is_draft and not trashed and not deleted \
                     order by time desc;")
         params.push([id])
@@ -71,20 +71,13 @@ async function get_mail (id, sender_id, mail_num) {
         params = [[sender_id, mail_num]]
     }
     else {
-        // try {
-        //     queries = ["update recipient set read = 'true' where sender_id = $1 and mail_num = $2 and id = $3;"]
-        //     params = [[sender_id, mail_num, id]]
-        //     output = await execute(queries,params)
-        // } catch (error) {
-        //     return [[{"status":"err_run_query"}]]
-        // }
         queries = ["select m.sender_id, m.mail_num, m.time, m.subject, m.content, r.is_cc, r.read, r.starred, r.trashed, r.deleted \
                     from mail as m join recipient as r using (sender_id, mail_num) \
                     where r.sender_id = $1 and r.mail_num = $2 and r.id = $3;"]
         params = [[sender_id, mail_num, id]]
     }
     try {
-        output = await execute(queries,params)
+        output = await consistent_execute(queries,params)
         return output
     } catch (error) {
         return [[{"status":"err_run_query"}]]
@@ -95,7 +88,7 @@ async function get_parent_mail (sender_id, mail_num) {
     queries = ["select * from mail where (sender_id, mail_num) = (select p_id, p_mail_num from reply where (id, mail_num) = ($1, $2));"]
     params = [[sender_id, mail_num]]
     try {
-        output = await execute(queries,params)
+        output = await consistent_execute(queries,params)
         return output
     } catch (error) {
         return [[{"status":"err_run_query"}]]
@@ -118,7 +111,6 @@ async function modify (id, sender_id, mail_num, mod){
         params.push([mod.dr, sender_id, mail_num])
     }
     if (mod.hasOwnProperty("s")){
-        console.log("modifying starred")
         queries.push("update recipient set starred = $1 where sender_id = $2 and mail_num = $3 and id = $4")
         params.push([mod.s, sender_id, mail_num, id])
     }
@@ -135,7 +127,7 @@ async function modify (id, sender_id, mail_num, mod){
         params.push([mod.d, sender_id, mail_num, id])
     }
     try {
-        output = await execute(queries,params)
+        output = await consistent_execute(queries,params)
         return output
     } catch (error) {
         return [[{"status":"err_run_query"}]]

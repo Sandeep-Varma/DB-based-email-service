@@ -28,6 +28,15 @@ async function execute (queries, params){
     return output
 }
 
+// same functionality as execute but if output is inconsistent, it executes again
+async function consistent_execute (queries, params){
+    output = await execute(queries,params)
+    if (output.length !== 1+queries.length){
+        output = await execute(queries,params)
+    }
+    return output
+}
+
 // execute a single query with each tuple in params
 async function executemany (query, params){
     output = [[{"status":"0"}]]
@@ -45,5 +54,6 @@ async function executemany (query, params){
 
 module.exports = {
     execute,
+    consistent_execute,
     executemany
 }

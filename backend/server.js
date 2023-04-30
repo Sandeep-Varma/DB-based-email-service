@@ -274,10 +274,8 @@ app.post('/modify',
     async (req,res)=>{
         id = req.session.user_id
         if (id){
-            console.log("Modifying mail",req.body.s_id,req.body.mn,req.body.mod)
             modify(id, req.body.s_id, req.body.mn, req.body.mod)
             .then(output => {
-                console.log("Modified")
                 res.send(output)
             })
             .catch(err => {
