@@ -3,76 +3,12 @@
 
 }
 
-.navigation {
-  position: fixed;
-  width: 170px; 
-  height: calc(100vh);
-  background-color: #e7e6e8; 
-  padding: 20px;
-  float: left; 
-  padding-top: 200px;
-  border-right: #1a1919 solid 5px;
-  border-left: #1a1919 solid 5px;
-  border-top: #1a1919 solid 2px;
-}
-
-.navigation  ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.navigation  li {
-  margin-bottom: 20px;
-  font-size: 26px; /* Adjust the font size as needed */
-  padding-bottom: 30px;
-  
-}
-.navigation li a {
-  text-decoration: none; /* Remove underline */
-  color: #040404;
-}
-
-.navigation li a:hover {
-  color: #250ddb; 
-  /* color: #000000; */
-}
-
-.navigation li.active {
-  /* background-color: #f0f0f0; Set the background color for the active page */
-  font-weight: bold; /* Apply a different font weight or any other styles */
-  font-style: oblique;
-  font-size: 32px ;
-  /* Add any additional styles to highlight the active page */
-}
-
-.navigation button{
-  position: relative;
-  bottom: 0;
-  margin-bottom: 40px;
-  margin-top: 100px;
-  width: 120px;
-  padding: 15px;
-  font-size: 20px;
-  border-radius: 10px;
-  color: #e73535;
-  background-color: #f2f2f2;
-  cursor: pointer;
-}
-
-.navigation button:hover{
-  color: #f2f2f2;
-  background-color: #e73535;
-  /* shadow */
-  box-shadow: 0 0 10px #000000;
-}
-
 .mail-page-container {
-  /* display: flex; */
+  display: flex;
   height: calc(100vh);
   margin-left: 210px;
-  /* overflow-y: scroll; 
-  overflow-x: scroll; */
+  overflow-y: scroll; 
+  overflow-x: scroll;
   overflow: hidden;
 }
 
@@ -97,25 +33,6 @@
   margin-top: 20px;
 }
 
-.input-box{
-  width: 90%;
-  /* bring this to the center */
-  margin-left: 2%;
-  padding: 15px;
-  font-size: 20px;
-  margin-bottom: 10px;
-  border-radius: 10px;
-  border: 2px solid #1a1919;
-}
-
-.input-box:focus{
-  border: 5px solid #007bff;
-  outline: auto;
-
-  box-shadow: 0 0 10px #000000;
-  
-
-}
 
 
 .mail-list li {
@@ -229,6 +146,7 @@
   border: 1px solid #ddd;
   padding: 20px;
   width: 65%;
+  overflow-wrap: break-word;
 
   
 }
@@ -249,8 +167,6 @@
 
 
 
-
-
 .secondary-navigation{
   /* background-color: #007bff; */
   align-items: baseline;
@@ -266,61 +182,6 @@
 
 }
 
-.move-to-trash-button{
-  /* margin-left: auto; */
-  margin-right: 20px;
-  font-size: 30px;
-  padding: 10px;
-  color:  #e73535;;
-  border-radius: 10px;
-  border: 2px solid #1a1919;
-  background-color: #ffffffec;
-  cursor: pointer;
-}
-
-.move-to-trash-button:hover{
-  color: #ffffffec;
-  background-color: #e73535;
-  /* shadow */
-  box-shadow: 0 0 10px #000000;
-}
-
-.reply-button{
-  /* margin-left: auto; */
-  margin-right: 20px;
-  font-size: 30px;
-  padding: 10px;
-  border-radius: 10px;
-  color:#007bff;
-  border: 2px solid #1a1919;
-  background-color: #ffffffec;
-  cursor: pointer;
-}
-
-.restore-btn{
-  /* margin-left: auto; */
-  margin-right: 20px;
-  font-size: 30px;
-  padding: 10px;
-  border-radius: 10px;
-  color:#007bff;
-  border: 2px solid #1a1919;
-  background-color: #ffffffec;
-  cursor: pointer;
-}
-
-.restore-btn:hover{
-  color: #ffffffec;
-  background-color: #007bff;
-  box-shadow: 0 0 10px #000000;
-}
-
-.reply-button:hover{
-  color: #ffffffec;
-  background-color: #007bff;
-  box-shadow: 0 0 10px #000000;
-}
-
 .sender-text{
   font-size: 20px;
   font-weight: bold;
@@ -331,7 +192,7 @@
 
 }
 
-/* @media screen and (max-width: 768px) {
+@media screen and (max-width: 768px) {
   .mail-page-container {
     flex-direction: column;
     height: auto;
@@ -340,7 +201,7 @@
   .mail-list-container {
     width: 100%;
   }
-} */
+}
 
 .mail-list-box {
   padding: 20px;
@@ -386,4 +247,3 @@
   background-color: #007bff;
   width: wrap-content;
 }
-
