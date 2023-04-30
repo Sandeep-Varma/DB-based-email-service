@@ -147,6 +147,7 @@ app.post('/get_mail/:box',
                 res.send(output)
             })
             .catch(err => {
+                console.log(err)
                 res.send([[{"status":"err_fetching_mail"}]])
             })
         }

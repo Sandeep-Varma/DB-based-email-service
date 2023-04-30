@@ -66,11 +66,11 @@ async function get_mailbox (id, box) {
 async function get_new_mails (id, time) {
 }
 
-async function get_mail (id, sender_id, mail_num) {
+async function get_mail (id, sender_id, mail_num,box) {
     if (box == "sent" || box == "drafts" || box == "scheduled"){
         queries = ["select * from mail where sender_id = $1 and mail_num = $2;"]
         params = [[sender_id, mail_num]]
-        query.push("select att_num, file_name, file_data from attachment where sender_id = $1 and mail_num = $2;")
+        queries.push("select att_num, file_name, file_data from attachment where sender_id = $1 and mail_num = $2;")
         params.push([sender_id, mail_num])
     }
     else {
@@ -78,7 +78,7 @@ async function get_mail (id, sender_id, mail_num) {
                     from mail as m join recipient as r using (sender_id, mail_num) \
                     where r.sender_id = $1 and r.mail_num = $2 and r.id = $3;"]
         params = [[sender_id, mail_num, id]]
-        query.push("select att_num, file_name, file_data from attachment where sender_id = $1 and mail_num = $2;")
+        queries.push("select att_num, file_name, file_data from attachment where sender_id = $1 and mail_num = $2;")
         params.push([sender_id, mail_num])
     }
     try {

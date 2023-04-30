@@ -21,6 +21,7 @@ const MailPage = () => {
   // const [sc,setSc] = useState(true)
   const [tl, setTl] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
+  const [attachments, setAttachments] = useState([]);
 
   const renderMailContent = (mail, index) => {
     const indentation = "       ".repeat(index);
@@ -40,12 +41,12 @@ const MailPage = () => {
 
   const view_dt = (time) => {
     let now = new Date();
-    let today = new Date(now.getFullYear()+'/'+(now.getMonth()+1)+'/'+now.getDate());
-    let date = new Date(time.substr(0,10));
-    let diff = (today - date)/(1000*60*60*24);
-    if (diff === 0) return "Today "+time.substr(11,5);
-    else if (diff <= 6) return time.substr(17,3)+" "+time.substr(11,5);
-    else return time.substr(0,16)
+    let today = new Date(now.getFullYear() + '/' + (now.getMonth() + 1) + '/' + now.getDate());
+    let date = new Date(time.substr(0, 10));
+    let diff = (today - date) / (1000 * 60 * 60 * 24);
+    if (diff === 0) return "Today " + time.substr(11, 5);
+    else if (diff <= 6) return time.substr(17, 3) + " " + time.substr(11, 5);
+    else return time.substr(0, 16)
   }
 
   const handleLogout = () => {
@@ -67,6 +68,33 @@ const MailPage = () => {
     // console.log(temp[index].starred)
     setData(temp);
     setC(!c)
+  }
+
+  const Download_attach = (fileName, fileData) => {
+    console.log(fileName, fileData)
+    console.log("download called")
+    const decodedData = atob(fileData);
+
+    // Convert the decoded data to Uint8Array
+    const arrayBuffer = new ArrayBuffer(decodedData.length);
+    const uint8Array = new Uint8Array(arrayBuffer);
+    for (let i = 0; i < decodedData.length; i++) {
+      uint8Array[i] = decodedData.charCodeAt(i);
+    }
+
+    // Create a Blob object from the Uint8Array data
+    const blob = new Blob([uint8Array], { type: 'application/octet-stream' });
+
+    // Create a temporary URL for the Blob object
+    const url = URL.createObjectURL(blob);
+
+    // Create a link element
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+
+    // Programmatically click the link to trigger the download
+    link.click();
   }
 
   const change_read = (index) => {
@@ -110,8 +138,9 @@ const MailPage = () => {
       .then(response => response.json())
       .then(
         async (response) => {
+          console.log("response", response)
           if (response[0][0].status === "not_logged_in") navigate("/login");
-          else setSelectedMailThread([response[1][0]]);
+          else { setSelectedMailThread([response[1][0]]); setAttachments(response[2]); }
         }
       )
   }
@@ -276,7 +305,7 @@ const MailPage = () => {
                         <p className={`mail-status${mail.read === false ? '' : '-read'}`}>{view_dt(mail.time)}</p>
                       </div>
                       <div className='left-lower-box'>
-                      <div className={`mail-status-subj${mail.read === false ? '' : '-read'}`}>  {mail.subject === ''? '(no subject)' : ((mail.subject.length > 25)?mail.subject.substr(0,22)+"...":mail.subject)} </div>
+                        <div className={`mail-status-subj${mail.read === false ? '' : '-read'}`}>  {mail.subject === '' ? '(no subject)' : ((mail.subject.length > 25) ? mail.subject.substr(0, 22) + "..." : mail.subject)} </div>
                       </div>
                     </div>
                     <div className="right-box">
@@ -346,6 +375,20 @@ const MailPage = () => {
             </nav>
             <div className='content-above2'>
               {/* NEEd to write the code here */}
+              {/* show all the attachments and a download button */}
+
+              <div>
+                <div>
+                  {attachments.map((attach) => (
+                    <div className='attachments' key={attach.att_id}>
+                      <p>{attach.file_name.substr(0,15)}</p> <div className='down-btn' onClick={()=>Download_attach(attach.file_name, attach.file_data)}>Download</div>
+                    </div>
+                  )
+                  )
+                  }
+                </div>
+
+              </div>
               {selectedMailThread.map((mail, index) => (
                 <div className='content-above1' key={mail.id}>
                   {renderMailContent(mail, index)}
