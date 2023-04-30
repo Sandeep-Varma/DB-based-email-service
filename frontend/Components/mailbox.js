@@ -33,7 +33,10 @@ const MailPage = () => {
       <div className='contentabove0'>
         <pre className='sender-text'>{indentedContent}</pre>
         <pre className='sender-text'>{indentedContent1}</pre>
-        <pre className='sender-text'>{indentedContent2}</pre>
+        {/* <pre className='sender-text'>{indentedContent2}</pre> */}
+        <div class="request-top" style={{whiteSpace: 'pre-wrap', overflowWrap: 'break-word'}}>
+          <p>{indentedContent2}</p>
+        </div>
         {/* <div style={{ marginBottom: "70px" }}></div> */}
       </div>
     )
