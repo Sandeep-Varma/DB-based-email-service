@@ -145,12 +145,8 @@ const MailPage = () => {
           if (response[0][0].status === "not_logged_in") navigate("/login");
           else {
             setSelectedMailThread([response[1][0]]);
-            if (response[2].length === 0) { setAttachments([]) 
-            }else{
-              setAttachments(response[2])
-            }
-          };
-        
+            setAttachments(response[2])
+          }
         }
       )
   }

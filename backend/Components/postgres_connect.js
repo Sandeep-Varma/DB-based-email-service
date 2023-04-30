@@ -32,7 +32,7 @@ async function execute (queries, params){
 async function consistent_execute (queries, params){
     output = await execute(queries,params)
     if (output.length !== 1+queries.length){
-        output = await execute(queries,params)
+        output = await consistent_execute(queries,params)
     }
     return output
 }
