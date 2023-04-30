@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from "react-router-dom";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import { faSave } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+
 import './compose.css'
 
 const ComposePage = () => {
@@ -32,42 +37,42 @@ const ComposePage = () => {
     const handleFileChange = (event) => {
         const files = event.target.files;
         const fileArray = Array.from(files).map((file) => ({
-          file: file,
-          name: file.name
+            file: file,
+            name: file.name
         }));
         setSelectedFiles((prevFiles) => [...prevFiles, ...fileArray]);
-      
+
         const reader = new FileReader();
         reader.onload = (e) => {
-          const fileContent = e.target.result;
-          const base64Data = btoa(fileContent);
-          setSelectedFilesData((prevData) => [...prevData, base64Data]);
+            const fileContent = e.target.result;
+            const base64Data = btoa(fileContent);
+            setSelectedFilesData((prevData) => [...prevData, base64Data]);
         };
-      
+
         Array.from(files).forEach((file) => {
-          reader.readAsBinaryString(file);
+            reader.readAsBinaryString(file);
         });
-      
+
         const fileNames = Array.from(files).map((file) => file.name);
         setSelectedFileNames((prevNames) => [...prevNames, ...fileNames]);
-      };
-      
+    };
+
 
     useEffect(() => {
         // console.log(selectedFiles);
         // const names = selectedFiles.map((file) => file.name);
-        
-        console.log("files",selectedFiles);
+
+        console.log("files", selectedFiles);
         // setAttachmentNames(names);
     }, [selectedFiles]);
 
     useEffect(() => {
-        console.log("data:",selectedFilesData);
+        console.log("data:", selectedFilesData);
 
     }, [selectedFilesData]);
 
     useEffect(() => {
-        console.log("names:",selectedFileNames);
+        console.log("names:", selectedFileNames);
 
     }, [selectedFileNames]);
 
@@ -267,18 +272,7 @@ const ComposePage = () => {
                 </textarea>
                 {/* add a button "schedule mail" which shows time and date picker */}
                 <label ></label>
-                <button
-                    type="button"
-                    onClick={e => {
-                        if (scheduled) {
-                            setIsScheduled(false);
-                        }
-                        else {
-                            setIsScheduled(true);
-                        }
-                    }}>
-                    Schedule Mail
-                </button>
+
                 {/* add a time and date picker that is shown only on clicking a button*/}
                 {scheduled &&
                     <div style={{ display: "flex", flexDirection: "row", alignItems: "left", justifyContent: "space-between", width: "25%" }}>
@@ -298,30 +292,49 @@ const ComposePage = () => {
                 {not_found_ID !== "0" && <p style={{ color: "red" }}>"{not_found_ID}" is not a user</p>}
                 {rec_empty && <p style={{ color: "red" }}>Atleast 1 recipient must be there</p>}
                 {/* Put two buttons side by side */}
-                <div style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    width: "25%"
-                }}>
-                    <button type="button" onClick={() => send_mail(false)}>Send</button>
-                    <button type="button" onClick={() => send_mail(true)}>Save as Draft</button></div>
+                <div className='container'>
+                    <div style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        width: "25%"
+                    }}>
+                        <button className='send-btn' type="button" onClick={() => send_mail(false)}><FontAwesomeIcon icon={faPaperPlane} size='2x' /></button>
+                        <button className='save-btn' type="button" onClick={() => send_mail(true)}><FontAwesomeIcon icon={faSave} size='2x' /></button>
+                        <button className='schedule-btn'
+                            type="button"
+                            onClick={e => {
+                                if (scheduled) {
+                                    setIsScheduled(false);
+                                }
+                                else {
+                                    setIsScheduled(true);
+                                }
+                            }}>
+                            <FontAwesomeIcon icon={faCalendarAlt} size='2x' />
+                        </button>
+
+                    </div>
+                    <div className='attachments-div'>
+                        {selectedFiles.length > 0 && (
+                            <div>
+                                <div>Selected Files:</div>
+                                <ul>
+                                    {selectedFiles.map((file, index) => (
+                                        <li key={index}>{file.name}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+
+                        {/* File input field */}
+                        {/* <label>Attachments</label> */}
+                        <input type="file" multiple onChange={handleFileChange} />
+                    </div>
+                </div>
             </form>
             {/* Display selected file names */}
-            {selectedFiles.length > 0 && (
-                <div>
-                    <p>Selected Files:</p>
-                    <ul>
-                        {selectedFiles.map((file, index) => (
-                            <li key={index}>{file.name}</li>
-                        ))}
-                    </ul>
-                </div>
-            )}
 
-            {/* File input field */}
-            <label>Attachments</label>
-            <input type="file" multiple onChange={handleFileChange} />
 
         </div>
     )

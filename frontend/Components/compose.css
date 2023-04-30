@@ -7,6 +7,28 @@
     /* background-color: #4CAF50; */
 }
 
+.attachments-div{
+    padding: 30px;
+    margin: 20px;
+}
+
+.save-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+/* .send-btn{
+    background-image: url('./send.png');
+} */
+
+.container{
+    /* display: flex; */
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    
+}
 .compose h1 {
     font-size: 36px;
     margin-bottom: 30px;
@@ -14,11 +36,12 @@
 }
 
 .compose form {
-    width: 80%;
+    width: 60%;
     display: flex;
     flex-direction: column;
     align-items: center;
     background-color: #84c3bd;
+
     border-radius: 10px;
     padding: 50px;
     box-shadow: 0 0 10px #888888;
