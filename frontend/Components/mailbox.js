@@ -28,11 +28,11 @@ const MailPage = () => {
     const indentedContent2 = indentation + "content:" + mail.content;
 
     return (
-      <div>
+      <div className='contentabove0'>
         <pre className='sender-text'>{indentedContent}</pre>
         <pre className='sender-text'>{indentedContent1}</pre>
         <pre className='sender-text'>{indentedContent2}</pre>
-        <div style={{ marginBottom: "70px" }}></div>
+        {/* <div style={{ marginBottom: "70px" }}></div> */}
       </div>
     )
   };
@@ -100,23 +100,22 @@ const MailPage = () => {
       .then(
         async (response) => {
           if (response[0][0].status === "not_logged_in") navigate("/login");
-          console.log("Hello1",response[1][0])
           setSelectedMailThread([response[1][0]]);
         }
       )
   }
 
   useEffect(() => {
-    // console.log("selectedMailthread", selectedMailThread.length, selectedMailThread[0])
-    // console.log("tl", tl)
-    if (tl !== selectedMailThread.length && selectedMailThread[selectedMailThread.length - 1]) {
+    console.log("selectedMailthread", selectedMailThread)
+    console.log("tl", tl)
+    if (tl !== selectedMailThread.length) {
       setTl(selectedMailThread.length);
     }
   }, [selectedMailThread])
 
   useEffect(() => {
-    if (tl > 0 && tl === selectedMailThread.length) {
-      // console.log("Hi",tl,selectedMailThread)
+    if (tl > 0) {
+      console.log(selectedMailThread[0])
       fetch('http://localhost:4000/get_parent_mail', {
         method: 'POST',
         mode: 'cors',
@@ -264,8 +263,13 @@ const MailPage = () => {
                   }
                   }>
                     <div className="left-box">
-                      <div className={`mail-status${mail.read === false ? '' : '-read'}`}>{mail.sender_id} {mail.subject}</div>
-                      <div className={`mail-status${mail.read === false ? '' : '-read'}`}>{mail.time[0]}{mail.time[1]}{mail.time[2]}{mail.time[3]}{mail.time[4]}{mail.time[5]}{mail.time[6]}{mail.time[7]}{mail.time[8]}{mail.time[9]}   {mail.time[12]}{mail.time[13]}{mail.time[14]}{mail.time[15]}{mail.time[16]}{mail.time[17]}{mail.time[18]} </div>
+                      <div className='left-upper-box'>
+                        <p className={`mail-status${mail.read === false ? '' : '-read'}`}>{mail.sender_id} </p>
+                        <p className={`mail-status${mail.read === false ? '' : '-read'}`}>{mail.time[0]}{mail.time[1]}{mail.time[2]}{mail.time[3]}{mail.time[4]}{mail.time[5]}{mail.time[6]}{mail.time[7]}{mail.time[8]}{mail.time[9]}   {mail.time[12]}{mail.time[13]}{mail.time[14]}{mail.time[15]}{mail.time[16]}{mail.time[17]}{mail.time[18]}</p>
+                      </div>
+                      <div className='left-lower-box'>
+                      <div className={`mail-status-subj${mail.read === false ? '' : '-read'}`}>  {mail.subject === ''? 'No Subject ' : mail.subject} </div>
+                      </div>
                     </div>
                     <div className="right-box">
                       {(box === 'inbox' || box === 'starred' || box === 'trashed') && (<div className="mark-read-unread" onClick={(e) => {
@@ -293,61 +297,58 @@ const MailPage = () => {
               ))}
             </ul>
           </div>
-          <div className="resize-handle"></div>
         </div>
-        <div className="mail-display-container">
-          {/* Right box for displaying selected email */}
-          {selectedMailThread[0] && (
+        {selectedMailThread[0] && (
 
-            <div className="mail-display">
-              <nav className='secondary-navigation'>
-                {!(box === 'trash') && <div className="move-to-trash-button" onClick={() => { modify(selectedMailThread[0].sender_id, selectedMailThread[0].mail_num, (box === 'inbox' || box === 'starred') ? { t: true } : { st: true }); navigate(0); console.log("hi") }}>
-                  Move to trash
-                </div>}
+          <div className="mail-display">
+            <nav className='secondary-navigation'>
+              {!(box === 'trash') && <div className="move-to-trash-button" onClick={() => { modify(selectedMailThread[0].sender_id, selectedMailThread[0].mail_num, (box === 'inbox' || box === 'starred') ? { t: true } : { st: true }); navigate(0); console.log("hi") }}>
+                Move to trash
+              </div>}
 
-                {box === 'trash' && <div className="restore-btn" onClick={() => { modify(selectedMailThread[0].sender_id, selectedMailThread[0].mail_num, { t: false }); navigate(0) }}>
-                  Restore
-                </div>}
+              {box === 'trash' && <div className="restore-btn" onClick={() => { modify(selectedMailThread[0].sender_id, selectedMailThread[0].mail_num, { t: false }); navigate(0) }}>
+                Restore
+              </div>}
 
-                {box === 'trash' && <div className="move-to-trash-button" onClick={() => { modify(selectedMailThread[0].sender_id, selectedMailThread[0].mail_num, { d: true }); navigate(0) }}>
-                  Delete
-                </div>}
-                {(box === 'inbox' || box === 'starred') && (<div className="reply-button" onClick={() => navigate("/mail/compose/0/" + selectedMailThread[0].sender_id + "/" + selectedMailThread[0].mail_num)}>
-                  Reply
-                </div>)}
+              {box === 'trash' && <div className="move-to-trash-button" onClick={() => { modify(selectedMailThread[0].sender_id, selectedMailThread[0].mail_num, { d: true }); navigate(0) }}>
+                Delete
+              </div>}
+              {(box === 'inbox' || box === 'starred') && (<div className="reply-button" onClick={() => navigate("/mail/compose/0/" + selectedMailThread[0].sender_id + "/" + selectedMailThread[0].mail_num)}>
+                Reply
+              </div>)}
 
-                
 
-                {
-                  box === 'scheduled' && (<div className="move-to-drafts" onClick={() => {
-                    modify(selectedMailThread[0].sender_id, selectedMailThread[0].mail_num, { dr: "true" });
-                    navigate('/mail/inbox')
-                  }
 
-                  }>
-                    Move to drafts
-                  </div>
-                  )}
-
-                {
-                  box === 'drafts' && (<div className="edit-draft" onClick={() => navigate("/mail/compose/" + selectedMailThread[0].mail_num + "/0/0")}>
-                    SEND OR EDIT DRAFT
-                  </div>)
+              {
+                box === 'scheduled' && (<div className="move-to-drafts" onClick={() => {
+                  modify(selectedMailThread[0].sender_id, selectedMailThread[0].mail_num, { dr: "true" });
+                  navigate('/mail/inbox')
                 }
-              </nav>
-              <div>
-                {/* NEEd to write the code here */}
-                {selectedMailThread.map((mail, index) => (
-                  <div key={mail.id}>
-                    {renderMailContent(mail, index)}
-                  </div>
-                ))}
-              </div>
 
+                }>
+                  Move to drafts
+                </div>
+                )}
+
+              {
+                box === 'drafts' && (<div className="edit-draft" onClick={() => navigate("/mail/compose/" + selectedMailThread[0].mail_num + "/0/0")}>
+                  SEND OR EDIT DRAFT
+                </div>)
+              }
+            </nav>
+            <div className='content-above2'>
+              {/* NEEd to write the code here */}
+              {selectedMailThread.map((mail, index) => (
+                <div className='content-above1' key={mail.id}>
+                  {renderMailContent(mail, index)}
+                </div>
+              ))}
             </div>
 
-          )}
-        </div>
+          </div>
+
+        )}
+        {/* </div> */}
       </div>
     </div>
 
