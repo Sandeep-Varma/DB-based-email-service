@@ -5,6 +5,7 @@ import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { faEnvelopeOpen } from '@fortawesome/free-solid-svg-icons';
 // import React, { useEffect, useState } from 'react';
 import "./mailbox.css"
+import "./mailbox2.css"
 
 
 const MailPage = () => {
