@@ -1,3 +1,4 @@
+const { query } = require('express')
 const { execute, consistent_execute, executemany } = require('./postgres_connect')
 
 async function get_mailbox (id, box) {
@@ -69,12 +70,16 @@ async function get_mail (id, sender_id, mail_num) {
     if (box == "sent" || box == "drafts" || box == "scheduled"){
         queries = ["select * from mail where sender_id = $1 and mail_num = $2;"]
         params = [[sender_id, mail_num]]
+        query.push("select att_num, file_name, file_data from attachment where sender_id = $1 and mail_num = $2;")
+        params.push([sender_id, mail_num])
     }
     else {
         queries = ["select m.sender_id, m.mail_num, m.time, m.subject, m.content, r.is_cc, r.read, r.starred, r.trashed, r.deleted \
                     from mail as m join recipient as r using (sender_id, mail_num) \
                     where r.sender_id = $1 and r.mail_num = $2 and r.id = $3;"]
         params = [[sender_id, mail_num, id]]
+        query.push("select att_num, file_name, file_data from attachment where sender_id = $1 and mail_num = $2;")
+        params.push([sender_id, mail_num])
     }
     try {
         output = await consistent_execute(queries,params)
@@ -181,7 +186,6 @@ async function delete_draft(id, mail_num) {
 }
 
 async function send_mail (id, subject, content, to_recipients, cc_recipients, is_draft, is_scheduled, send_time, p_id, p_mn, att) {
-    console.log(att.names)
     if (is_scheduled) {
         queries = ["INSERT into mail values ($1, 1+(select num_mails from mail_user where id=$2), $3, $4, $5, $6, $7, $8);"]
         params = [[id, id, send_time, subject, content, is_draft, false, false]]
@@ -189,6 +193,10 @@ async function send_mail (id, subject, content, to_recipients, cc_recipients, is
     else {
         queries = ["INSERT into mail values ($1, 1+(select num_mails from mail_user where id=$2), (select now from now()), $3, $4, $5, $6, $7);"]
         params = [[id, id, subject, content, is_draft, false, false]]
+    }
+    for (let i=0; i<att.names.length; i++){
+        queries.push("INSERT into attachment values ($1, 1+(select num_mails from mail_user where id=$2), $3, $4, $5);");
+        params.push([id, id, i, att.names[i], att.data[i]]);
     }
     if (p_mn > 0) {
         queries.push("INSERT into reply values ($1, 1+(select num_mails from mail_user where id=$2), $3, $4);")

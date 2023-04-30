@@ -77,7 +77,8 @@ create table attachment(
     sender_id varchar(25) not null,
     mail_num int not null,
     att_num int not null check (att_num >= 0),
-    file_id varchar(30) not null,
+    file_name varchar(100) not null,
+    file_data text,
     primary key(sender_id, mail_num, att_num),
     foreign key(sender_id, mail_num) references mail(sender_id, mail_num) on delete cascade
 );
