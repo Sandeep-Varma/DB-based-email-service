@@ -93,16 +93,34 @@
     margin-right: 20px;
     font-size: 30px;
     padding: 10px;
-    color:  #e73535;;
+    /* color:  #e73535;; */
     border-radius: 10px;
     border: 2px solid #1a1919;
-    background-color: #ffffffec;
+    background-color: #a4a1a1;
     cursor: pointer;
   }
   
   .move-to-trash-button:hover{
-    color: #ffffffec;
-    background-color: #e73535;
+    /* color: #ffffffec; */
+    /* background-color: #e73535; */
+    box-shadow: 0 0 10px #000000;
+  }
+
+  .edit-draft{
+    /* margin-left: auto; */
+    margin-right: 20px;
+    font-size: 30px;
+    padding: 10px;
+    /* color:  #e73535;; */
+    border-radius: 10px;
+    border: 2px solid #1a1919;
+    background-color: #a4a1a1;
+    cursor: pointer;
+  }
+
+  .edit-draft:hover{
+    /* color: #ffffffec; */
+    /* background-color: #e73535; */
     box-shadow: 0 0 10px #000000;
   }
   
@@ -112,9 +130,9 @@
     font-size: 30px;
     padding: 10px;
     border-radius: 10px;
-    color:#007bff;
+    /* color:#007bff; */
     border: 2px solid #1a1919;
-    background-color: #ffffffec;
+    background-color: #a4a1a1;
     cursor: pointer;
   }
   
@@ -124,21 +142,51 @@
     font-size: 30px;
     padding: 10px;
     border-radius: 10px;
-    color:#007bff;
+    /* color:#007bff; */
     border: 2px solid #1a1919;
-    background-color: #ffffffec;
+    background-color: #a4a1a1;
     cursor: pointer;
   }
   
   .restore-btn:hover{
     color: #ffffffec;
-    background-color: #007bff;
+    
     box-shadow: 0 0 10px #000000;
   }
   
   .reply-button:hover{
-    color: #ffffffec;
-    background-color: #007bff;
+    /* color: #ffffffec; */
+    /* background-color: #007bff; */
     box-shadow: 0 0 10px #000000;
   }
   
+  .contentabove0 {
+    font-family: Arial, sans-serif;
+    font-size: 30px;
+    line-height: 1.5;
+  }
+  
+  .sender-id {
+    font-weight: bold;
+    color: #333;
+    font: 30px;
+  }
+  
+  .subject {
+    font-weight: bold;
+    color: #333;
+    font: 20px;
+  }
+  
+  .request-top {
+    margin-top: 10px;
+  }
+  
+  .matter {
+    color: #555;
+  }
+  
+  .att-div{
+    align-items: center;
+    padding-top:60px;
+  }

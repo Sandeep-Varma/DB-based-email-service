@@ -8,6 +8,7 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 10px;
+  /* align-items: center; */
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -197,10 +198,11 @@
   align-items: baseline;
   height: auto;
   width: 100%;
+  background-color: #a4a1a1;
   /* items should be in horizontal */
   display: flex;
-  justify-content: left;
-  padding: 30px;
+  justify-content: center;
+  /* margin-bottom: 60px; */
   /* margin-bottom: 10px; */
   border-radius: 10px;
   /* margin-left: -40px; */
@@ -237,6 +239,7 @@
 }
 .content-above2{
   border: #000000;
+  /* background-color: #b3b4b5; */
  
 }
 .content-above0{

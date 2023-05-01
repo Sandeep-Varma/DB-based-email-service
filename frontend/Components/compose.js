@@ -32,6 +32,8 @@ const ComposePage = () => {
     const [selectedFileNames, setSelectedFileNames] = useState([]);
     const [selectedFilesData, setSelectedFilesData] = useState([]);
     const [progressMessage, setProgressMessage] = useState('');
+    const [reading, setReading] = useState(false);
+
 
 
     const removeFile = (index) => {
@@ -62,21 +64,23 @@ const ComposePage = () => {
         }));
         setSelectedFiles((prevFiles) => [...prevFiles, ...fileArray]);
 
-
-
-        const reader = new FileReader();
-        reader.onloadstart = () => {
-            setProgressMessage('Reading file...');
-        };
-        reader.onload = (e) => {
-            const fileContent = e.target.result;
-            const base64Data = btoa(fileContent);
-            setSelectedFilesData((prevData) => [...prevData, base64Data]);
-        };
-        reader.onloadend = () => {
-            setProgressMessage('Reading complete!');
-        };
         Array.from(files).forEach((file) => {
+            const reader = new FileReader();
+
+            reader.onloadstart = () => {
+                setProgressMessage('Reading file...');
+            };
+
+            reader.onload = (e) => {
+                const fileContent = e.target.result;
+                const base64Data = btoa(fileContent);
+                setSelectedFilesData((prevData) => [...prevData, base64Data]);
+            };
+
+            reader.onloadend = () => {
+                setProgressMessage('Reading complete!');
+            };
+
             reader.readAsBinaryString(file);
         });
 
