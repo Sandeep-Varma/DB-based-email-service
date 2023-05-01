@@ -6,7 +6,7 @@ async function get_mailbox (id, box) {
     params = [[id]]
 
     if (box == "inbox") {
-        queries.push("select m.sender_id, m.mail_num, to_char(timezone('Asia/Kolkata',m.time),'YYYY/MM/DD HH24:MM Day') as time, m.subject, r.read, r.starred \
+        queries.push("select m.sender_id, m.mail_num, to_char(timezone('Asia/Kolkata',m.time),'YYYY/MM/DD HH24:MI Day') as time, m.subject, r.read, r.starred \
                     from mail as m join recipient as r using (sender_id, mail_num) \
                     where (r.id = $1 or r.id in (select list_id from mailing_list where id = $1)) \
                     and time < (select now from now()) \
@@ -15,7 +15,7 @@ async function get_mailbox (id, box) {
         params.push([id])
     }
     else if (box == "starred") {
-        queries.push("select m.sender_id, m.mail_num, to_char(timezone('Asia/Kolkata',m.time),'YYYY/MM/DD HH24:MM Day') as time, m.subject, r.read, r.starred \
+        queries.push("select m.sender_id, m.mail_num, to_char(timezone('Asia/Kolkata',m.time),'YYYY/MM/DD HH24:MI Day') as time, m.subject, r.read, r.starred \
                     from mail as m join recipient as r using (sender_id, mail_num) \
                     where (r.id = $1 or r.id in (select list_id from mailing_list where id = $1)) \
                     and time < (select now from now()) \
@@ -24,31 +24,31 @@ async function get_mailbox (id, box) {
         params.push([id])
     }
     else if (box == "sent") {
-        queries.push("select sender_id, mail_num, to_char(timezone('Asia/Kolkata',time),'YYYY/MM/DD HH24:MM Day') as time, subject, content, is_draft, starred, trashed, deleted from mail where sender_id = $1 and time < (select now from now()) \
+        queries.push("select sender_id, mail_num, to_char(timezone('Asia/Kolkata',time),'YYYY/MM/DD HH24:MI Day') as time, subject, content, is_draft, starred, trashed, deleted from mail where sender_id = $1 and time < (select now from now()) \
                     and not is_draft and not trashed and not deleted \
                     order by time desc;")
         params.push([id])
     }
     else if (box == "drafts") {
-        queries.push("select sender_id, mail_num, to_char(timezone('Asia/Kolkata',time),'YYYY/MM/DD HH24:MM Day') as time, subject, content, is_draft, starred, trashed, deleted from mail where sender_id = $1 and is_draft \
+        queries.push("select sender_id, mail_num, to_char(timezone('Asia/Kolkata',time),'YYYY/MM/DD HH24:MI Day') as time, subject, content, is_draft, starred, trashed, deleted from mail where sender_id = $1 and is_draft \
                     and not trashed and not deleted \
                     order by time desc;")
         params.push([id])
     }
     else if (box == "trash") {
-        queries.push("select m.sender_id, m.mail_num, to_char(timezone('Asia/Kolkata',m.time),'YYYY/MM/DD HH24:MM Day') as time, m.subject, r.read, r.starred \
+        queries.push("select m.sender_id, m.mail_num, to_char(timezone('Asia/Kolkata',m.time),'YYYY/MM/DD HH24:MI Day') as time, m.subject, r.read, r.starred \
                     from mail as m join recipient as r using (sender_id, mail_num) \
                     where (r.id = $1 or r.id in (select list_id from mailing_list where id = $1)) \
                     and time < (select now from now()) \
                     and not is_draft and r.trashed and not r.deleted \
                     order by time desc;")
         params.push([id])
-        queries.push("select sender_id, mail_num, to_char(timezone('Asia/Kolkata',time),'YYYY/MM/DD HH24:MM Day') as time, subject, content, is_draft, starred, trashed, deleted from mail where sender_id = $1 and trashed and not deleted \
+        queries.push("select sender_id, mail_num, to_char(timezone('Asia/Kolkata',time),'YYYY/MM/DD HH24:MI Day') as time, subject, content, is_draft, starred, trashed, deleted from mail where sender_id = $1 and trashed and not deleted \
                     order by time desc;")
         params.push([id])
     }
     else if (box == "scheduled") {
-        queries.push("select sender_id, mail_num, to_char(timezone('Asia/Kolkata',time),'YYYY/MM/DD HH24:MM Day') as time, subject, content, is_draft, starred, trashed, deleted from mail where sender_id = $1 and time > (select now from now()) \
+        queries.push("select sender_id, mail_num, to_char(timezone('Asia/Kolkata',time),'YYYY/MM/DD HH24:MI Day') as time, subject, content, is_draft, starred, trashed, deleted from mail where sender_id = $1 and time > (select now from now()) \
                     and not is_draft and not trashed and not deleted \
                     order by time desc;")
         params.push([id])
