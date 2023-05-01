@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from "react-router-dom";
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import { faSave } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import './compose.css'
 
 const ComposePage = () => {
@@ -26,48 +31,75 @@ const ComposePage = () => {
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [selectedFileNames, setSelectedFileNames] = useState([]);
     const [selectedFilesData, setSelectedFilesData] = useState([]);
+    const [progressMessage, setProgressMessage] = useState('');
 
 
+    const removeFile = (index) => {
+        setSelectedFiles((prevFiles) => {
+            const updatedFiles = [...prevFiles];
+            updatedFiles.splice(index, 1);
+            return updatedFiles;
+        });
+
+        setSelectedFileNames((prevNames) => {
+            const updatedNames = [...prevNames];
+            updatedNames.splice(index, 1);
+            return updatedNames;
+        });
+
+        setSelectedFilesData((prevData) => {
+            const updatedData = [...prevData];
+            updatedData.splice(index, 1);
+            return updatedData;
+        });
+    };
 
     const handleFileChange = (event) => {
         const files = event.target.files;
         const fileArray = Array.from(files).map((file) => ({
-          file: file,
-          name: file.name
+            file: file,
+            name: file.name
         }));
         setSelectedFiles((prevFiles) => [...prevFiles, ...fileArray]);
-      
+
+
+
         const reader = new FileReader();
-        reader.onload = (e) => {
-          const fileContent = e.target.result;
-          const base64Data = btoa(fileContent);
-          setSelectedFilesData((prevData) => [...prevData, base64Data]);
+        reader.onloadstart = () => {
+            setProgressMessage('Reading file...');
         };
-      
+        reader.onload = (e) => {
+            const fileContent = e.target.result;
+            const base64Data = btoa(fileContent);
+            setSelectedFilesData((prevData) => [...prevData, base64Data]);
+        };
+        reader.onloadend = () => {
+            setProgressMessage('Reading complete!');
+        };
         Array.from(files).forEach((file) => {
-          reader.readAsBinaryString(file);
+            reader.readAsBinaryString(file);
         });
-      
+
         const fileNames = Array.from(files).map((file) => file.name);
         setSelectedFileNames((prevNames) => [...prevNames, ...fileNames]);
-      };
-      
+    };
+
 
     useEffect(() => {
         // console.log(selectedFiles);
         // const names = selectedFiles.map((file) => file.name);
-        
-        console.log("files",selectedFiles);
+
+        console.log("files", selectedFiles);
         // setAttachmentNames(names);
     }, [selectedFiles]);
 
     useEffect(() => {
-        console.log("data:",selectedFilesData);
+        console.log("data:", selectedFilesData);
 
     }, [selectedFilesData]);
 
     useEffect(() => {
-        console.log("names:",selectedFileNames);
+        console.log("names:", selectedFileNames);
 
     }, [selectedFileNames]);
 
@@ -267,18 +299,7 @@ const ComposePage = () => {
                 </textarea>
                 {/* add a button "schedule mail" which shows time and date picker */}
                 <label ></label>
-                <button
-                    type="button"
-                    onClick={e => {
-                        if (scheduled) {
-                            setIsScheduled(false);
-                        }
-                        else {
-                            setIsScheduled(true);
-                        }
-                    }}>
-                    Schedule Mail
-                </button>
+
                 {/* add a time and date picker that is shown only on clicking a button*/}
                 {scheduled &&
                     <div style={{ display: "flex", flexDirection: "row", alignItems: "left", justifyContent: "space-between", width: "25%" }}>
@@ -294,34 +315,77 @@ const ComposePage = () => {
                             onChange={e => setDate(e.target.value)} />
                     </div>
                 }
-                {!dt_filled && <p style={{ color: "red" }}>Please select a date and time</p>}
-                {not_found_ID !== "0" && <p style={{ color: "red" }}>"{not_found_ID}" is not a user</p>}
-                {rec_empty && <p style={{ color: "red" }}>Atleast 1 recipient must be there</p>}
-                {/* Put two buttons side by side */}
-                <div style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    width: "25%"
-                }}>
-                    <button type="button" onClick={() => send_mail(false)}>Send</button>
-                    <button type="button" onClick={() => send_mail(true)}>Save as Draft</button></div>
+                {/* <div className='lower-box'> */}
+                <div className='buttons-compose-page'>
+
+                    {!dt_filled && <p style={{ color: "red" }}>Please select a date and time</p>}
+                    {not_found_ID !== "0" && <p style={{ color: "red" }}>"{not_found_ID}" is not a user</p>}
+                    {rec_empty && <p style={{ color: "red" }}>Atleast 1 recipient must be there</p>}
+                    {/* Put two buttons side by side */}
+                    <div className='send-draft-schedule-btn'>
+                        <button type="button" onClick={() => send_mail(false)}><FontAwesomeIcon
+                            icon={faPaperPlane} size='2x'
+                        /></button>
+                        <button type="button" onClick={() => send_mail(true)}><FontAwesomeIcon
+                            icon={faSave} size='2x'
+                        /></button>
+                        <button
+                            type="button"
+                            onClick={e => {
+                                if (scheduled) {
+                                    setIsScheduled(false);
+                                }
+                                else {
+                                    setIsScheduled(true);
+                                }
+                            }}>
+                            <FontAwesomeIcon
+                                icon={faCalendarAlt} size='2x'
+                            />
+                        </button>
+                    </div>
+
+
+
+                </div>
+                <div className="file-selection-container">
+                    <label htmlFor="file-input" className="file-input-label">
+                        <input
+                            type="file"
+                            id="file-input"
+                            multiple
+                            onChange={handleFileChange}
+                            className="file-input"
+                        />
+                        <span className="file-input-text">Select Files</span>
+                    </label>
+                    <div className="attachments-div">
+
+                        {selectedFiles.length > 0 && (
+                            <div className="selected-files-container">
+                                <div className="selected-files-heading">Selected Files:</div>
+                                <ul className="selected-files-list">
+                                    {selectedFiles.map((file, index) => (
+                                        <li key={index} className="selected-file-item">
+                                            <span className="file-name">{file.name}</span>
+                                            <FontAwesomeIcon
+                                                icon={faTimes}
+                                                className="remove-file-icon"
+                                                onClick={() => removeFile(index)}
+                                            />
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                        {progressMessage && <div className="progress-message">{progressMessage}</div>}
+
+                    </div>
+                </div>
+                {/* </div> */}
             </form>
             {/* Display selected file names */}
-            {selectedFiles.length > 0 && (
-                <div>
-                    <p>Selected Files:</p>
-                    <ul>
-                        {selectedFiles.map((file, index) => (
-                            <li key={index}>{file.name}</li>
-                        ))}
-                    </ul>
-                </div>
-            )}
 
-            {/* File input field */}
-            <label>Attachments</label>
-            <input type="file" multiple onChange={handleFileChange} />
 
         </div>
     )

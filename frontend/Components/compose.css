@@ -5,15 +5,15 @@
     margin-top: 50px;
     font-family: Arial, Helvetica, sans-serif;
     /* background-color: #4CAF50; */
-}
-
-.compose h1 {
+  }
+  
+  .compose h1 {
     font-size: 36px;
     margin-bottom: 30px;
     color: #333;
-}
-
-.compose form {
+  }
+  
+  .compose form {
     width: 80%;
     display: flex;
     flex-direction: column;
@@ -22,41 +22,16 @@
     border-radius: 10px;
     padding: 50px;
     box-shadow: 0 0 10px #888888;
-}
-
-.compose label {
+  }
+  
+  .compose label {
     font-size: 18px;
     color: #333;
     margin-bottom: 10px;
-}
-
-.compose input {
-    width: 100%;
-    font-size: 18px;
-    padding: 10px;
-    margin-bottom: 20px;
-    border-radius: 5px;
-    border: none;
-    box-shadow: 0 0 5px #888888;
-}
-
-.compose button {
-    background-color: #333;
-    border: none;
-    color: #ffffff;
-    padding: 10px;
-    text-align: center;
-    display: inline-block;
-    font-size: 18px;
-    /* margin: 15px; */
-    width: 100px;
-    border-radius: 5px;
-    box-shadow: 0 0 5px #888888;
-    cursor: pointer;
-    margin-top: 20px;
-}
-
-.compose textarea {
+  }
+  
+  .compose input,
+  .compose textarea {
     width: 100%;
     font-size: 18px;
     padding: 10px;
@@ -65,4 +40,92 @@
     border: none;
     box-shadow: 0 0 5px #888888;
     resize: none;
-}
+  }
+  
+  .compose button {
+    background-color: #333;
+    border: none;
+    color: #ffffff;
+    padding: 10px;
+    text-align: center;
+    display: inline-block;
+    font-size: 18px;
+    /* width: 100px; */
+    margin: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px #888888;
+    cursor: pointer;
+    margin-top: 20px;
+  }
+  
+  .buttons-compose-page {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+  
+  .file-selection-container {
+    display: flex;
+    flex-direction: column;
+    align-items: right;
+  }
+  
+  .attachments-div {
+    margin-top: 20px;
+  }
+  
+  .selected-files-container {
+    background-color: #f3f3f3;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+  }
+  
+  .selected-files-heading {
+    font-weight: bold;
+  }
+  
+  .selected-files-list {
+    list-style-type: none;
+    padding-left: 0;
+  }
+  
+  .selected-file-item {
+    margin-top: 5px;
+  }
+  
+  .file-input-label {
+    display: inline-block;
+    background-color: #e4e4e4;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .file-input-label:hover {
+    background-color: #d0d0d0;
+  }
+  
+  .file-input {
+    display: none;
+  }
+  
+  .file-input-text {
+    font-weight: bold;
+  }
+  
+  .remove-file-icon {
+    cursor: pointer;
+    color: #ff0000;
+  }
+  
+  .progress-message {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #f2f2f2;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    color: #333;
+  }
+  
