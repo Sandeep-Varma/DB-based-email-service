@@ -57,7 +57,7 @@ const LoginUser = ()=>{
     }
 
     return (
-        <div className='container'>
+        <div className='container-ls'>
             <h1 >Login</h1>
             <form>
               <label>User ID</label>

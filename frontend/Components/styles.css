@@ -1,4 +1,4 @@
-.container {
+.container-ls {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -8,13 +8,13 @@
   
 }
 
-.container h1 {
+.container-ls h1 {
   font-size: 36px;
   margin-bottom: 30px;
   color: #333;
 }
 
-.container form {
+.container-ls form {
   width: 300px;
   display: flex;
   flex-direction: column;
@@ -25,12 +25,12 @@
   box-shadow: 0 0 10px #888888;
 }
 
-.container label {
+.container-ls label {
   font-size: 18px;
   color: #333;
   margin-bottom: 10px;
 }
-.container input {
+.container-ls input {
   width: 100%;
   font-size: 18px;
   padding: 10px;
@@ -40,7 +40,7 @@
   box-shadow: 0 0 5px #888888;
 }
 
-.container button {
+.container-ls button {
   background-color: #333;
   border: none;
   color: #ffffff;
@@ -55,11 +55,11 @@
   cursor: pointer;
 }
 
-  .container button:hover {
+  .container-ls button:hover {
       background-color: #4CAF50;
   }
 
-  .container button:active {
+  .container-ls button:active {
       background-color: #3e8e41;
       box-shadow: 0 5px #666;
       transform: translateY(4px);

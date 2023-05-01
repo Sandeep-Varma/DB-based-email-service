@@ -169,7 +169,7 @@
 
 .mail-display {
   border: 1px solid #ddd;
-  /* padding: 20px; */
+  padding: 20px;
   width: 65%;
   overflow-wrap: break-word;
 
@@ -200,10 +200,9 @@
   /* items should be in horizontal */
   display: flex;
   justify-content: left;
-  /* padding: 10px; */
+  padding: 30px;
   /* margin-bottom: 10px; */
   border-radius: 10px;
-  background-color: #d8d6d6;
   /* margin-left: -40px; */
 
 }

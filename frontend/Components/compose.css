@@ -7,28 +7,6 @@
     /* background-color: #4CAF50; */
 }
 
-.attachments-div{
-    padding: 30px;
-    margin: 20px;
-}
-
-.save-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-/* .send-btn{
-    background-image: url('./send.png');
-} */
-
-.container{
-    /* display: flex; */
-    width: 100%;
-    flex-direction: row;
-    justify-content: space-between;
-    
-}
 .compose h1 {
     font-size: 36px;
     margin-bottom: 30px;
@@ -36,12 +14,11 @@
 }
 
 .compose form {
-    width: 60%;
+    width: 80%;
     display: flex;
     flex-direction: column;
     align-items: center;
     background-color: #84c3bd;
-
     border-radius: 10px;
     padding: 50px;
     box-shadow: 0 0 10px #888888;
@@ -89,95 +66,3 @@
     box-shadow: 0 0 5px #888888;
     resize: none;
 }
-
-
-.file-selection-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .attachments-div {
-    margin-top: 20px;
-  }
-  
-  .selected-files-container {
-    background-color: #f3f3f3;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 10px;
-  }
-  
-  .selected-files-heading {
-    font-weight: bold;
-  }
-  
-  .selected-files-list {
-    list-style-type: none;
-    padding-left: 0;
-  }
-  
-  .selected-file-item {
-    margin-top: 5px;
-  }
-  
-  .file-input-label {
-    display: inline-block;
-    background-color: #e4e4e4;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .file-input-label:hover {
-    background-color: #d0d0d0;
-  }
-  
-  .file-input {
-    display: none;
-  }
-  
-  .file-input-text {
-    font-weight: bold;
-  }
-  .file-selection-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .attachments-div {
-    margin-top: 20px;
-  }
-  
-  .selected-files-container {
-    background-color: #f3f3f3;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 10px;
-  }
-  
-  .selected-files-heading {
-    font-weight: bold;
-  }
-  
-  .selected-files-list {
-    list-style-type: none;
-    padding-left: 0;
-  }
-  
-  .selected-file-item {
-    margin-top: 5px;
-    display: flex;
-    align-items: center;
-  }
-  
-  .file-name {
-    margin-right: 5px;
-  }
-  
-  .remove-file-icon {
-    cursor: pointer;
-    color: #ff0000;
-  }
-    

@@ -78,7 +78,7 @@ function SignUp() {
         
 
     return (
-        <div className='container'>
+        <div className='container-ls'>
             <h1>Create User</h1>
             <form>
                 <label>User ID</label>
